@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
@@ -9,23 +11,26 @@ const CHAR = "/images/char1.png";
 const ITEM = {
   id: "github",
   label: "GITHUB",
-  icon: "🐙",
+  icon: "</>",
   barIcon: "/images/icon1.png",
-  href: "https://github.com/mikedimeji",
-  handle: "@mikedimeji",
+  href: "https://github.com/AndresAkm",
+  handle: "@AndresAkm",
+  subtitle: "Repositorios públicos activos (@AndresAkm) · Python, JavaScript, Dart",
   stats: [
-    { tag: "REP", value: "—", color: "#6e40c9" },
-    { tag: "STR", value: "—", color: "#f1e05a" },
+    { tag: "REP", value: "3+", color: "#6e40c9" },
+    { tag: "STACK", value: "3", color: "#f1e05a" },
   ],
   links: [
-    { label: "GITHUB PROFILE", url: "https://github.com/mikedimeji" },
+    { label: "VER CÓDIGO", url: "https://github.com/AndresAkm" },
   ],
 };
 
 // ── COMPONENT ─────────────────────────────────────────────────────────────────
 
-export default function Github() {
+export default function Github({ onBack }: { onBack?: () => void }) {
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
   const [mounted, setMounted]       = useState(false);
   const [focused, setFocused]       = useState(false); // right panel focused
   const [activeLink, setActiveLink] = useState(0);
@@ -46,7 +51,7 @@ export default function Github() {
         }
       } else {
         if (e.key === "ArrowLeft")  setFocused(false);
-        if (e.key === "Enter")      window.open(ITEM.links[activeLink].url, "_blank");
+        if (e.key === "Enter")      window.open(ITEM.links[activeLink].url, "_blank", "noopener,noreferrer");
       }
 
     };
@@ -56,12 +61,54 @@ export default function Github() {
 
   }, [focused, activeLink]);
 
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden" id="github-screen">
+        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
+          <source src="/videos/equip.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
+        <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))", display: "flex", flexDirection: "column", justifyContent: "center", gap: 16 }}>
+          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff" }}>GITHUB</div>
+          <div style={{ position: "relative" }}>
+            <div style={{ position: "absolute", inset: "8px -4px -8px 8px", background: "#c4001a", clipPath: "polygon(24px 0, 100% 0, calc(100% - 16px) 100%, 0 100%)" }} />
+            <div style={{ position: "relative", padding: "18px 16px", background: "#ffffff", clipPath: "polygon(24px 0, 100% 0, calc(100% - 16px) 100%, 0 100%)", boxShadow: "0 8px 24px rgba(0,0,0,0.65)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.2rem,5.2vw,1.6rem)", letterSpacing: -1, color: "#111", transform: "rotate(-8deg)" }}>LÍDER</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#6e40c9" }}>{ITEM.icon}</span>
+              </div>
+              <div style={{ marginTop: 12, fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(1.3rem,5.6vw,1.7rem)", letterSpacing: 3, color: "#111" }}>{ITEM.label}</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.85rem,3.6vw,1rem)", letterSpacing: 2, color: "rgba(0,0,0,0.55)" }}>{ITEM.handle}</div>
+              <div style={{ marginTop: 8, fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.75rem,3.3vw,0.88rem)", lineHeight: 1.35, color: "rgba(0,0,0,0.62)" }}>{ITEM.subtitle}</div>
+              <div style={{ display: "flex", gap: 18, marginTop: 14 }}>
+                {ITEM.stats.map(stat => (
+                  <div key={stat.tag} style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 11, letterSpacing: 1, padding: "1px 4px", border: `1px solid ${stat.color}`, color: stat.color }}>{stat.tag}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, fontStyle: "italic", color: "#111" }}>{stat.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <button onClick={() => window.open(ITEM.links[0].url, "_blank", "noopener,noreferrer")} style={{ minHeight: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 14px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: 2, color: "#08153f", background: "#8df6ff", border: "none", cursor: "pointer", clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
+            <span>{ITEM.links[0].label}</span>
+            <span>ABRIR →</span>
+          </button>
+        </div>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>VOLVER AL MENÚ</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden" id="github-screen">
 
       {/* BG VIDEO */}
       <video
-        autoPlay loop muted playsInline
+        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/equip.mp4" type="video/mp4" />
@@ -81,7 +128,7 @@ export default function Github() {
         }}
       >
         <video
-          autoPlay loop muted playsInline
+          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         >
           <source src="/videos/equip.mp4" type="video/mp4" />
@@ -131,7 +178,7 @@ export default function Github() {
         }}
       >
         <div
-          onClick={() => window.open(ITEM.href, "_blank")}
+          onClick={() => window.open(ITEM.href, "_blank", "noopener,noreferrer")}
           onMouseEnter={() => {}}
           style={{
             position: "relative",
@@ -237,7 +284,7 @@ export default function Github() {
                   flexShrink: 0,
                 }}
               >
-                LEADER
+                LÍDER
               </div>
 
               {/* LABEL */}
@@ -266,6 +313,20 @@ export default function Github() {
                   }}
                 >
                   {ITEM.handle}
+                </div>
+                <div
+                  style={{
+                    maxWidth: 300,
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontWeight: 300,
+                    fontSize: 10,
+                    lineHeight: 1.2,
+                    color: "rgba(0,0,0,0.5)",
+                    textAlign: "center",
+                    userSelect: "none",
+                  }}
+                >
+                  {ITEM.subtitle}
                 </div>
               </div>
 
@@ -316,7 +377,7 @@ export default function Github() {
       {mounted && (
         <div
           className="gh-infobar-in"
-          onClick={() => { setFocused(true); window.open(ITEM.links[0].url, "_blank"); }}
+          onClick={() => { setFocused(true); window.open(ITEM.links[0].url, "_blank", "noopener,noreferrer"); }}
           onMouseEnter={() => setFocused(true)}
           onMouseLeave={() => setFocused(false)}
           style={{
@@ -357,11 +418,11 @@ export default function Github() {
             />
 
             <span style={{ flex: 1, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: 2, color: "#111", padding: "0 14px", userSelect: "none" }}>
-              GITHUB PROFILE
+              {ITEM.links[0].label}
             </span>
 
             <span style={{ height: "70%", background: "#000", display: "flex", alignItems: "center", padding: "0 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 1, color: "#fff", flexShrink: 0, borderRadius: 6, marginRight: 4, userSelect: "none" }}>
-              OPEN
+              ABRIR
             </span>
           </div>
         </div>
@@ -383,7 +444,7 @@ export default function Github() {
           transition: "opacity 0.4s ease 0.6s",
         }}
       >
-        {[["→", "LINK"], ["↵", "OPEN"], ["ESC", "BACK"]].map(([key, label]) => (
+        {[["→", "ENLACE"], ["↵", "ABRIR"], ["ESC", "VOLVER"]].map(([key, label]) => (
           <div key={key} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, letterSpacing: 2, color: "rgba(255,255,255,0.22)" }}>
             <span style={{ border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, padding: "1px 6px", fontSize: 11 }}>{key}</span>
             <span>{label}</span>

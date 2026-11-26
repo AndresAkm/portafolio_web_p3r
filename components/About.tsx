@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 // Each entry is one tappable dialogue page. "\n" forces a line break.
@@ -9,22 +11,14 @@ import { motion } from "framer-motion";
 const SPEAKER = "MAKOTO";
 
 const PAGES = [
-  `Hi — I'm Makoto.  (｡•̀ᴗ-)✧\n` +
-  `      /\\_/\\\n` +
-  `     ( -.-)\n` +
-  `      > ^ <\n` +
-  `...d-don't get the wrong idea. I'm only here to introduce someone.`,
-
-  `Let me introduce you to Bhargav.  (¬‿¬)`,
-
-  `So... Bhargav.\nHe says he's "just looking into something."\nNever trust that sentence.`,
-
-  `That's how you end up with a new project, a completely redesigned website, and seventeen browser tabs open at 2 A.M.\nI've seen the logs.`,
-
-  `I don't think this is a bug anymore.\nPretty sure it's a feature.  (￣ω￣;)`,
+  "¡Hola! Soy Makoto. Bienvenido al archivo personal de Andrxss (Jaime Andrés Parra Sánchez), desarrollador de software en formación desde Antioquia, Colombia.",
+  "Actualmente cursa Análisis y Desarrollo de Software en el SENA, especializándose en construir aplicaciones web y móviles completas de principio a fin.",
+  "Su arsenal técnico combina Python, Django, JavaScript, Node.js y Flutter, respaldado por modelado de datos relacionales (MySQL/MariaDB) y no relacionales (MongoDB).",
+  "Le apasiona entender cómo funcionan los sistemas por debajo: desde el diseño de bases de datos hasta el despliegue en la nube.",
+  "Si buscas a alguien autodidacta, analítico y listo para aportar en un equipo de desarrollo, revisa sus proyectos o envíale un mensaje.",
 ];
 
-const TYPE_SPEED = 22; // ms per character
+const TYPE_SPEED = 9;
 
 // Floating P5 confetti shards — {left%, top%, size, color, dur, delay}
 const SHARDS = [
@@ -41,6 +35,8 @@ const SHARDS = [
 
 export default function About({ onBack }: { onBack?: () => void }) {
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [page, setPage]       = useState(0);
   const [shown, setShown]     = useState(0);   // chars revealed of current page
@@ -55,37 +51,40 @@ export default function About({ onBack }: { onBack?: () => void }) {
     return () => clearTimeout(t);
   }, []);
 
-  // typewriter for current page (+ soft per-char blip)
   useEffect(() => {
-    setShown(0);
     if (!mounted) return;
-    let i = 0;
-    const id = setInterval(() => {
-      i += 1;
-      setShown(i);
-      // tick every few visible chars, kept quiet
-      if (i % 3 === 0 && full[i - 1] !== " " && full[i - 1] !== "\n") {
-        const tick = new Audio("/sfx/deck_ui_navigation.wav");
-        tick.volume = 0.06;
-        tick.play().catch(() => {});
+    let interval: number | undefined;
+    const timer = window.setTimeout(() => {
+      if (prefersReducedMotion) {
+        setShown(full.length);
+        return;
       }
-      if (i >= full.length) clearInterval(id);
-    }, TYPE_SPEED);
-    return () => clearInterval(id);
-  }, [page, mounted, full.length]);
+      setShown(0);
+      let i = 0;
+      interval = window.setInterval(() => {
+        i += 1;
+        setShown(i);
+        if (i % 3 === 0 && full[i - 1] !== " " && full[i - 1] !== "\n") {
+          const tick = new Audio("/sfx/deck_ui_navigation.wav");
+          tick.volume = 0.06;
+          tick.play().catch(() => {});
+        }
+        if (i >= full.length && interval !== undefined) window.clearInterval(interval);
+      }, TYPE_SPEED);
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      if (interval !== undefined) window.clearInterval(interval);
+    };
+  }, [page, mounted, full, prefersReducedMotion]);
 
-  const blip = () => {
+  const advance = useCallback(() => {
+    if (!done) { setShown(full.length); return; }
     const sfx = new Audio("/sfx/deck_ui_navigation.wav");
     sfx.volume = 0.5;
     sfx.play().catch(() => {});
-  };
-
-  // advance: finish typing first, else go to next page (wraps at the end)
-  const advance = () => {
-    if (!done) { setShown(full.length); return; }
-    blip();
     setPage(p => (p + 1) % PAGES.length);
-  };
+  }, [done, full.length]);
 
   // keyboard: Enter/→/Space advance, ESC back
   useEffect(() => {
@@ -97,7 +96,44 @@ export default function About({ onBack }: { onBack?: () => void }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [done, full.length]);
+  }, [advance]);
+
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230" }}>
+        <div className="absolute inset-0 select-none" style={{ zIndex: 0, pointerEvents: "none", backgroundImage: "url('/images/about-makoto.png')", backgroundSize: "cover", backgroundPosition: "32% center" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.15) 0%, rgba(4,9,26,0.55) 55%, rgba(4,9,26,0.9) 100%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 12, padding: "18px 16px calc(88px + var(--safe-bottom))" }}>
+          <div style={{ alignSelf: "flex-end", marginRight: 4, padding: "5px 12px 6px", background: "#0a1230", color: "#8df6ff", fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(18px,5.5vw,24px)", letterSpacing: 3, clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
+            {SPEAKER}
+          </div>
+          <div
+            data-mobile-scroll=""
+            onClick={advance}
+            style={{ position: "relative", maxHeight: "46vh", overflowY: "auto", padding: "18px 18px 22px", background: "rgba(245,249,255,0.96)", border: "2px solid rgba(8,17,54,0.8)", clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 12px, 100% 100%, 18px 100%, 0 calc(100% - 12px))", boxShadow: "6px 6px 0 rgba(6,15,44,0.72)", cursor: "pointer" }}
+          >
+            <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400, fontSize: "clamp(0.88rem,4vw,1rem)", lineHeight: 1.45, color: "#0b1730" }}>
+              {full.slice(0, shown)}
+            </span>
+            <span style={{ marginLeft: 2, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: "#2f8bff" }}>_</span>
+          </div>
+          <button
+            onClick={advance}
+            style={{ alignSelf: "stretch", minHeight: 48, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "#c4001a", border: "none", cursor: "pointer", clipPath: "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}
+          >
+            {!done ? "VER TODO" : isLast ? "REINICIAR" : "CONTINUAR"}
+          </button>
+        </div>
+        <button
+          onClick={() => onBack?.()}
+          style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}
+        >
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>VOLVER AL MENÚ</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230" }}>
@@ -234,8 +270,8 @@ export default function About({ onBack }: { onBack?: () => void }) {
         {/* ▼ ADVANCE CARET — pulses when the line is done */}
         {done && (
           <motion.div
-            animate={{ opacity: [0.25, 1, 0.25], y: [0, 3, 0] }}
-            transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [0.25, 1, 0.25], y: [0, 3, 0] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
             style={{
               position: "absolute",
               right: 26,
@@ -287,13 +323,13 @@ export default function About({ onBack }: { onBack?: () => void }) {
           pointerEvents: "none",
         }}
       >
-        {isLast && done ? "TAP TO REPLAY" : "TAP / ↵  TO CONTINUE"}
+        {isLast && done ? "TOCA PARA REPETIR" : "TOCA / ↵  PARA CONTINUAR"}
       </motion.div>
 
       {/* P5 PHANTOM THIEVES BADGE — Persona cred, not larping */}
       <motion.img
         src="/images/p5-logo.png"
-        alt="Phantom Thieves"
+        alt="Ladrones Fantasma"
         initial={{ opacity: 0, scale: 0.6, rotate: -12 }}
         animate={{ opacity: mounted ? 0.92 : 0, scale: 1, rotate: 0 }}
         transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1], delay: 0.7 }}
@@ -311,7 +347,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
         draggable={false}
       />
 
-      {/* BACK TO MENU */}
+      {/* VOLVER AL MENÚ */}
       <button
         onClick={() => onBack?.()}
         style={{
@@ -326,7 +362,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
         }}
       >
         <span style={{ fontSize: 22, lineHeight: 1 }}>←</span>
-        <span style={{ lineHeight: 1 }}>BACK TO MENU</span>
+        <span style={{ lineHeight: 1 }}>VOLVER AL MENÚ</span>
       </button>
 
     </div>

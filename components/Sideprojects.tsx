@@ -2,9 +2,13 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
 
 export default function SideProjects({ onBack }: { onBack?: () => void }) {
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -12,12 +16,35 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
     return () => clearTimeout(t);
   }, []);
 
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
+          <source src="/videos/skills.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{ zIndex: 1, background: "rgba(0,0,0,0.5)" }} />
+        <div style={{ position: "absolute", top: "38%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
+        <div style={{ position: "absolute", top: "62%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: "0 16px", textAlign: "center" }}>
+          <div style={{ fontFamily: "Persona", fontSize: "clamp(2rem,10vw,3.2rem)", letterSpacing: "0.02em", lineHeight: 1, color: "#67e8f9", WebkitTextStroke: "1px rgba(103,232,249,0.4)" }}>PRÓXIMAMENTE</div>
+          <div style={{ maxWidth: "90vw", fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.8rem,4vw,1rem)", letterSpacing: "clamp(1px,0.4vw,3px)", lineHeight: 1.5, color: "rgba(255,255,255,0.45)" }}>
+            PROYECTOS SECUNDARIOS EN CARGA<span>_</span>
+          </div>
+        </div>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>VOLVER AL MENÚ</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden">
 
       {/* BG VIDEO */}
       <video
-        autoPlay loop muted playsInline
+        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/skills.mp4" type="video/mp4" />
@@ -40,7 +67,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
         }}
       >
         <video
-          autoPlay loop muted playsInline
+          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         >
           <source src="/videos/skills.mp4" type="video/mp4" />
@@ -119,7 +146,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
             WebkitTextStroke: "1px rgba(103,232,249,0.4)",
           }}
         >
-          COMING SOON
+          PRÓXIMAMENTE
         </motion.div>
 
         {/* SUBTITLE */}
@@ -136,7 +163,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
             textAlign: "center",
           }}
         >
-          SIDE PROJECTS LOADING<span className="sp-cursor">_</span>
+          PROYECTOS SECUNDARIOS EN CARGA<span className={prefersReducedMotion ? undefined : "sp-cursor"}>_</span>
         </motion.div>
 
       </div>
@@ -160,11 +187,11 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, letterSpacing: 2, color: "rgba(255,255,255,0.22)" }}>
           <span style={{ border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, padding: "1px 6px", fontSize: 11 }}>ESC</span>
-          <span>BACK</span>
+          <span>VOLVER</span>
         </div>
       </motion.div>
 
-      {/* BACK TO MENU */}
+      {/* VOLVER AL MENÚ */}
       <button
         onClick={() => onBack?.()}
         style={{
@@ -179,7 +206,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
         }}
       >
         <span style={{ fontSize: 22, lineHeight: 1 }}>←</span>
-        <span style={{ lineHeight: 1 }}>BACK TO MENU</span>
+        <span style={{ lineHeight: 1 }}>VOLVER AL MENÚ</span>
       </button>
 
     </div>

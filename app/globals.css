@@ -27,3 +27,41 @@ body {
   padding: 0;
   margin: 0;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 768px) {
+  main {
+    height: 100dvh;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [data-mobile-scroll] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [data-mobile-bg] {
+    object-position: center 35%;
+    transform: translateZ(0);
+  }
+}

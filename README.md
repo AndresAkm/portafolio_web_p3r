@@ -1,138 +1,106 @@
 <div align="center">
 
-# ⚔️ Bhargav's Persona
+# Andrxss — Portafolio Persona
 
-### A personal portfolio built as a **Persona 3 Reload** main menu.
+### Portafolio personal construido como el menú principal de **Persona 3 Reload**.
 
-[![Live Site](https://img.shields.io/badge/live-www.zykan.me-48d2ff?style=for-the-badge)](https://www.zykan.me)
+[![Sitio en vivo](https://img.shields.io/badge/live-andrxsportfolio.vercel.app-48d2ff?style=for-the-badge)](https://andrxsportfolio.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![License: MIT](https://img.shields.io/badge/Code-MIT-e8002d?style=for-the-badge)](LICENSE)
+[![Licencia MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-e8002d?style=for-the-badge)](LICENSE)
 
-*Editorial, minimal, and unapologetically themed after the cleanest UI in gaming.*
+*Interfaz editorial, minimalista y tematizada con el menú más limpio del género.*
 
 </div>
 
 ---
 
-> **A note before you scroll:** this is a fan project. The code is open and MIT-licensed —
-> the **Persona artwork, fonts, music and video are © Atlus / Sega** and are **not** mine to
-> license. See [Assets & Credits](#-assets--credits) before you fork. Swap them for your own and
-> you've got a clean, original template.
+> Proyecto de fan. El código está bajo licencia MIT; los recursos de Persona, arte, tipografías, música y vídeo son © Atlus / Sega y no están incluidos en esa licencia.
 
 ---
 
-## ✨ What it is
+## Qué es
 
-A single-page personal site that behaves like the Persona 3 Reload menu — vertical hero name,
-HUD wallet/status panel, a skewed cyan nav, and full-screen sub-views for **About**, **Resume**,
-**Projects**, and **Social Links**. Everything is laid out in viewport units so the whole 16:9
-frame scales as one composition.
+Un sitio de una sola página que funciona como el menú de Persona 3 Reload: nombre diagonal, HUD de estado, navegación inclinada y vistas completas para **Acerca de**, **Currículum**, **Proyectos** y **Enlaces**.
 
 | | |
 |---|---|
-| 🎮 **P3R-faithful UI** | Skewed nav, red active underlay, HUD panels, SFX on navigate/confirm |
-| 🗂️ **Data-driven Resume** | Edit three arrays at the top of `Resume.tsx` — never the JSX |
-| 💬 **Persona dialogue easter egg** | About page renders a Social-Link style typewriter box (SVG, in code) |
-| 🔗 **Animated Social Links** | Per-link accent glow + floating "shatter" particles |
-| ⚡ **Zero UI deps** | Just Next.js + framer-motion — the design lives in the components |
+| Interfaz P3R | Navegación inclinada, panel rojo activo, HUD y efectos de sonido |
+| Currículum editable | Bloques de datos al inicio de `components/Resume.tsx` |
+| Diálogo Persona | `About.tsx` muestra a Makoto con efecto máquina de escribir |
+| Enlaces animados | Colores por enlace y partículas de shattered glass |
+| Sin dependencias de interfaz | Solo Next.js + framer-motion; el diseño vive en los componentes |
 
-> 🃏 **Side note:** yes, the About page guest-stars **Makoto Niijima** — and yes, I know she's
-> from **Persona 5**, not 3. 😄 She's my personal favourite, so she got a cameo in my P3R-themed
-> menu. Consider it a deliberate cross-over, not a lore slip.
+Makoto aparece como homenaje personal dentro del diálogo; el contenido del portafolio corresponde a Jaime Andrés Parra Sánchez.
 
 ---
 
-## 📸 Screenshots
+## Tecnologías
 
-<div align="center">
-
-| Main Menu | About |
-|:---:|:---:|
-| ![Main menu](docs/screenshots/menu.png) | ![About screen](docs/screenshots/about.png) |
-| **Resume** | **Social Links** |
-| ![Resume screen](docs/screenshots/resume.png) | ![Social links screen](docs/screenshots/socials.png) |
-
-</div>
-
----
-
-## 🛠️ Tech Stack
-
-- **[Next.js 16](https://nextjs.org)** (App Router) + **React 19**
+- **Next.js 16** (App Router) y **React 19**
 - **TypeScript**
-- **[framer-motion](https://www.framer.com/motion/)** for animation
+- **framer-motion**
 - **Tailwind CSS v4**
-- Deployed on **[Vercel](https://vercel.com)** → live at **[zykan.me](https://zykan.me)**
+- Despliegue en **Vercel**: `https://andrxsportfolio.vercel.app`
 
 ---
 
-## 🚀 Getting Started
+## Ejecutar
 
-```bash
-git clone https://github.com/7Bhargav7/Persona-themed-website.git
-cd Persona-themed-website
+```powershell
 npm install
-npm run dev          # → http://localhost:3000
+npm run dev
 ```
 
-> ⚠️ **Judge the design at 100% browser zoom.** Every element uses `vw`/`vh`, so the whole
-> layout scales together. If something only looks right at 80%/125%, the *value* is wrong —
-> fix the value, don't rely on zoom.
+La aplicación queda en `http://localhost:3000`.
 
-### Make it yours
-1. Swap the contents of `components/Resume.tsx`, `About.tsx`, and `Socials.tsx` with your own data
-   (each has clearly labelled data arrays at the top of the file).
-2. Replace the media in `public/` with your own assets (**required** — see below).
-3. Update fonts/colors in `app/layout.tsx` and `app/globals.css`.
+> Comprueba el diseño al 100% de zoom: casi todas las medidas usan `vw`/`vh` para conservar la composición 16:9.
 
 ---
 
-## 🗂️ Project Structure
+## Estructura
 
-```
+```text
 app/
-  layout.tsx        # fonts + global metadata
-  globals.css       # theme tokens & colors
-  page.tsx          # mounts the menu
+  layout.tsx                 metadata, idioma, fuentes y Open Graph
+  globals.css                estilos globales y prefers-reduced-motion
+  page.tsx                   monta el menú
 components/
-  Menu.tsx          # ⭐ the whole main-menu composition lives here
-  Resume.tsx        # data-driven résumé (edit the arrays, not the JSX)
-  About.tsx         # Persona dialogue-box easter egg
-  Socials.tsx       # animated social links + shatter particles
-  Sideprojects.tsx  # projects screen
-  Transition.tsx    # screen-to-screen transitions
-  useIsMobile.ts    # matchMedia hook for the mobile reflow
-public/             # videos, images, fonts, audio, sfx  (Atlus assets — replace these)
+  Menu.tsx                   composición principal del menú
+  About.tsx                  diálogo de Makoto
+  Resume.tsx                 experiencia, habilidades, educación y proyectos
+  Socials.tsx                enlaces profesionales y de contacto
+  Github.tsx                 tarjeta de GitHub
+  Sideprojects.tsx           pantalla de próximamente
+  Transition.tsx             transiciones entre pantallas
+  useIsMobile.ts             detección de móvil
+  usePrefersReducedMotion.ts detección de movimiento reducido
+public/
+  favicon.svg                icono Andrxss
+  og-cover.png               portada social 1200x630
+  projects/                  capturas y README de proyectos
 ```
 
-**Palette:** cyan `#48d2ff` · white `#ffffff` · red `#e8002d` · navy `#0a0f1c` · status blue `#1f6fb2`
+---
+
+## Datos del propietario
+
+- **Nombre:** Jaime Andrés Parra Sánchez
+- **Alias:** Andrxss
+- **Perfil:** Desarrollador Full-Stack Junior (Web & Mobile)
+- **GitHub:** [@AndresAkm](https://github.com/AndresAkm)
+- **LinkedIn:** [Jaime Andrés Parra Sánchez](https://www.linkedin.com/in/jaime-andr%C3%A9s-parra-sanchez-365586378/)
+- **Instagram:** [@andres_akm_](https://www.instagram.com/andres_akm_)
+- **Correo:** jaym3gd2431@gmail.com
 
 ---
 
-## 🙏 Assets & Credits
+## Recursos y créditos
 
-**Code lineage** — this started as a fork and was heavily reworked:
-- Original concept: **[blairxu13/persona3-website](https://github.com/blairxu13/persona3-website)**
-- Forked via: **[mikedimeji/persona-portfolio](https://github.com/mikedimeji/persona-portfolio)**
-- Rebuilt, redesigned and rewritten by **[Bhargav Kundu](https://github.com/7Bhargav7)**
-
-**Game assets** — *Persona 3 Reload* and *Persona 5* are **© Atlus / Sega**. The videos, character
-art, fonts (`Persona`, `Skip Std`) and music in this repo are used here **for non-commercial,
-personal/fan purposes only** and are **not covered by this project's license**. If you fork this,
-please **replace them with assets you have the right to use.**
+Los recursos visuales y sonoros de Persona se usan con fines personales y no comerciales. Si vas a reutilizar este proyecto, reemplázalos por recursos propios o con licencia.
 
 ---
 
-## 📄 License
+## Licencia
 
-The **code** in this repository is released under the **[MIT License](LICENSE)** — fork it, learn
-from it, build your own. The **bundled game assets are excluded** from that license (see above).
-
----
-
-<div align="center">
-
-Built by **Bhargav Kundu** · [zykan.me](https://zykan.me) · [@7Bhargav7](https://github.com/7Bhargav7)
-
-</div>
+El código se distribuye bajo [MIT License](LICENSE). Los recursos de Persona quedan excluidos de esa licencia.

@@ -1,152 +1,46 @@
-# Bhargav's Persona — Project Status
+# Andrxss — Estado del proyecto
 
-**Last updated:** 2026-06-14 (session 4)
+**Última actualización:** 2026-11-25
 
-## 🚀 DEPLOYED — live as of 2026-06-14 s3
-- **Repo:** `7Bhargav7/Persona-themed-website` (GitHub, **private**) — this is **Bhargav's own repo now**, created this session. Old `mikedimeji/persona-portfolio` origin was replaced. History was rebuilt into a single clean commit (orphan) to strip oversized video blobs. **Push-to-`main` auto-deploys** via Vercel — so commit + push to ship.
-- **Host:** Vercel (free Hobby), auto-detects Next.js. Live URL `persona-themed-website-tawny.vercel.app`.
-- **Domain:** `zykan.me` (Namecheap, free `.me` from GitHub Student Pack). DNS in Namecheap Advanced DNS: `A @ 216.198.79.1` + `CNAME www 6f1b302cfecb5a6d.vercel-dns-017.com` (+ keep the SPF TXT). Apex redirects to `www`. SSL auto-issued by Vercel. (Deleted the GitHub-Pages records Namecheap auto-added — 185.199.x.)
-- **git creds:** set global `credential.helper=manager` so pushes auth via GCM popup.
-- ⚠️ **GitHub 100MB limit:** videos must stay compressed. `_originals/` backups + `*.prproj`/`*.prin` are gitignored. ffmpeg installed (winget Gyan.FFmpeg) — re-compress with `libx264 -crf 23..30 -movflags +faststart -an`.
+## Estado actual
 
-### Session 3 feature work (2026-06-14)
-- **About reworked** (`About.tsx`) — replaced the old Michael-Oladimeji "ENTER TO REVEAL" screen with a **P5 Social-Link dialogue box** (easter-egg; Makoto = his fav from P5). Code-rendered jagged white-outline box (SVG path, **pointer on the LEFT toward Makoto**, blue **MAKOTO** name tag top-right), **typewriter** text + soft blips, **tap/Enter to advance** pages (loops), 5 pages: Makoto intro + kawaii ASCII + tsundere kaomoji → "introduce Bhargav" → smoothed lead-in into the original lines. Background = `about-makoto.png` (Bhargav's exported SVG → rasterized, **clean plate w/o the baked box**; slimmed 16MB→0.75MB @1920). **Phantom Thieves logo** badge top-right (`p5-logo.png`, gray-keyed to transparent from `persona 5.jpg`) so people know he knows P5. Animations: outline draw-in, name-tag slam, drifting confetti shards.
-- **Menu active item** (`Menu.tsx`) — dropped the flat red line; now a **red underlay peeking behind the white panel** (P5 look) + **dynamic hover spacing** (active item grows `marginTop 0.16em / marginBottom 0.52em` to push neighbors apart, showing blue between the red and the next line). Tried/rejected: triangle-slash + black-outline-text renditions.
-- **Menu videos** — fixed the slow/low-res start: **blob-preload** both menu videos fully before play, loop video always running underneath so intro→loop has no flash, reveal gated on `canplaythrough`/`onPlaying`. Re-encoded smaller + `+faststart`.
-- **Socials** — bg video now `status.enhanced.mp4`; **email fixed** (`mailto:` opens mail client via `location.href`; `window.open(_blank)` was opening a dead tab) via shared `openLink()`.
+Portafolio de Jaime Andrés Parra Sánchez con estética de Persona 3 Reload. Todos los datos visibles de la plantilla fueron reemplazados por información real de Andrxss.
 
----
-**What it is:** A Persona 3 Reload–themed personal portfolio (personal site, not TraceGI).
-**Owner:** Bhargav Kundu
+- **Sitio:** `https://andrxsportfolio.vercel.app`
+- **Repositorio de código:** `https://github.com/AndresAkm`
+- **Stack:** Next.js 16.2.6, React 19.2.4, TypeScript 5, Tailwind CSS v4 y framer-motion.
+- **Idioma:** español en todo el contenido visible. Se conservan marcas técnicas y el titular `Andrxss' / portafolio`.
+- **Accesibilidad:** `MotionConfig reducedMotion="user"`, hook `usePrefersReducedMotion` y media query global para `prefers-reduced-motion`. Los vídeos dejan de reproducirse automáticamente cuando el usuario prefiere menos movimiento.
+- **Responsive:** cada sub-pantalla tiene una rama móvil propia con `useIsMobile()` (<=768px), scroll interno, botones táctiles amplios, tipografía `clamp` y `env(safe-area-inset-bottom)`. El diseño de escritorio permanece en su rama original. `Github` ahora recibe `onBack`, así que también tiene salida táctil.
+- **Vídeos en móvil:** en móvil se evita la precarga completa de `menu.mp4` y `menu-intro.mp4`; se usa `preload="metadata"` y un crop vertical consistente vía `[data-mobile-bg]`. Con `prefers-reduced-motion`, los vídeos no se precargan ni se reproducen. Las URLs blob se liberan al desmontar/cambiar de breakpoint.
 
----
+## Contenido
 
-## How to run
-```powershell
-cd C:\Users\Zykan\Documents\bhargav-persona
-npm run dev        # → http://localhost:3000
-```
-Next.js 16 + TypeScript + framer-motion. **Almost the entire design lives in `components/Menu.tsx`.**
+- **Menú:** HUD con `ENFOQUE ACTUAL -> FULL-STACK DEV` y `ESTADO -> PRACTICANTE EN TECNOPARQUE`; controles `↑↓ NAVEGAR`, `A CONFIRMAR`, `ESC VOLVER`; footer con Antioquia, Colombia (UTC-5), respuesta en menos de 24 horas y copyright.
+- **Acerca de:** Makoto presenta cinco páginas de texto real sin emojis ni arte ASCII; máquina de escribir rápida y salto directo al texto con movimiento reducido.
+- **Currículum:** trayectoria independiente/formativa, habilidades por categoría, educación del SENA, tres proyectos destacados con capturas y enlaces, y ranura de currículum PDF en `PRÓXIMAMENTE`.
+- **Enlaces:** LinkedIn, GitHub, Instagram, correo y ranura de currículum PDF deshabilitada.
+- **Proyectos secundarios:** pantalla `PRÓXIMAMENTE` conservada con vídeo `skills.mp4`.
 
-> ⚠️ **Always judge the design at 100% browser zoom.** All elements use viewport units (`vw`/`vh`) so they scale together. If something "only looks right" at 80%/125% zoom, the *size value* is wrong — fix the value, don't rely on zoom.
+## Título diagonal
 
----
+Especificación vigente en `components/Menu.tsx`:
 
-## ✅ DONE — Home / main menu screen
+- Contenedor: `top:calc(4% - 4px); left:4%`.
+- Dos líneas: `Andrxss'` / `portafolio` en Anton 400.
+- Segunda línea con `marginLeft:30px` en escritorio y `24px` en móvil.
+- Tipografía `clamp(3.8rem, 7vw, 6.8rem)` en escritorio y `clamp(2.16rem, 9vw, 3.2rem)` en móvil.
+- `letterSpacing:-0.02em`, `lineHeight:0.86`, `rotate(24deg)` desde `top left`.
+- Entrada escalonada con 0.08s de diferencia entre líneas.
 
-Cloned from `mikedimeji/persona-portfolio` (based on `blairxu13/persona3-website`) and heavily reworked to match Bhargav's own Figma design. Current composition (left → right):
+## Recursos creados
 
-| Element | Spec (in `Menu.tsx`) |
-|---|---|
-| **Character video** | `menu.mp4` / `menu-intro.mp4`, `translateX(15%)` to open white space on the left; white backdrop behind (`zIndex 0`, video `zIndex 1`). |
-| **Vertical BHARGAV** | far-left, full height. `font-size: 35vh`, Bebas Neue, `rotate(-90deg)`, color `#0a0f1c`. Container `left:-1vw; width:20vw; height:100vh`. |
-| **Wallet HUD** | top-left (right of BHARGAV). `top:7vh; left:20vw; width:15vw`, white box w/ `2px solid #0a0f1c` border + bottom-right corner wedge. Content: `₹0` (2.6vw) / `CURRENT WALLET` (0.85vw) / divider / `STATUS` (0.85vw) / `SEEKING` (1.55vw, blue `#1f6fb2`). All Bebas Neue. |
-| **Menu** | right side. Container `top:30vh; left:56vw`. `<nav>` has `transform: skewX(-9deg)` (the lean — applied in CODE because Figma can't skew). Items: Bebas Neue, `font-size: clamp(2.6rem, 6.25vw, 7.5rem)`, `letter-spacing:0.01em`, cyan `#48d2ff`. |
-| **Active menu item** | white panel (`scaleX` in) + text turns `#0a0f1c` + **horizontal red bar** `#e8002d` (`top:60%`, `height:10`, `width:112%`, `zIndex:1`) sitting under the text and poking past the right edge. (NOT the diagonal slash — that was rejected.) |
-| **Controls** | bottom-right HUD: `↑↓ NAVIGATE / A CONFIRM / ESC BACK`, Bebas Neue, low opacity. |
+- `public/favicon.svg`: letra `A` roja y blanca sobre azul marino.
+- `public/og-cover.png`: portada 1200x630 con identidad Andrxss.
+- `public/projects/README.md`: nombres de capturas esperadas y nota de portada social.
 
-**Removed by choice:** the big serif `PERSONA` title (dropped 2026-06-13). The word "PERSONA" now appears nowhere; BHARGAV is the hero graphic.
+## Verificación
 
-### Colors
-- Cyan text `#48d2ff` · white `#ffffff` · red accent `#e8002d` · dark navy `#0a0f1c` · status blue `#1f6fb2`
-
-### Fonts (`app/layout.tsx` + `app/globals.css`)
-- **Bebas Neue** (Google) — menu, wallet, BHARGAV, controls. *(only weight: Regular)*
-- **Playfair Display** (Google, Black Italic) — was the PERSONA title; currently unused but still loaded.
-- **Persona** (`persona.ttf`) — only the "PRESS START" splash.
-- **Skip** (`FOT-Skip Std B.otf`) — registered, currently unused (the real P3R UI font, kept for later).
-
----
-
-## 🎨 Figma — design source of truth
-- File: `https://www.figma.com/design/KSl6F92iEob6sGjMn12ZtP/Untitled?node-id=0-1`
-- Frame `1:2` ("Slide 16:9 - 1", 1920×1080). Menu is a real text node (`4:5`): Bebas Neue, **150px**, `#48d2ff`, tracking 1.5px, line-height 0.95.
-- Connected via the **official Figma MCP connector** (read design straight from the file). Bhargav's account is a **student/View seat** → the local "Dev Mode MCP Server" toggle is unavailable, so use the **cloud connector + frame URL** (works fine).
-- Assets also copied to `C:\Users\Zykan\Documents\persona-figma-assets`.
-
-> Note: menu in code is `6.25vw` (~120px), not 150px — deliberately ~80% of Figma because Bhargav views Brave at a zoom where 150px rendered too large. Treat 100% zoom as truth.
-
----
-
-## ✅ DONE — Resume screen (`components/Resume.tsx`)
-
-Fully wired with **Bhargav's real (security/infrastructure) resume** — all of Michael Oladimeji's data replaced.
-
-**Card order — reordered to lead with the strongest:** EXPERIENCE → SKILLS → PROJECTS → EDUCATION. One-line flip in the `ITEMS` array if we ever want Education-first again.
-
-**Three index-aligned data blocks at the top of the file drive everything** (edit content here, NOT the JSX):
-- `ITEMS` — the 4 left-list cards (badge, title, subtitle, rank).
-- `SUMMARY_PANELS` — the default right-panel per card (top bar + rows + optional bottom highlight box).
-- `EXPANDED_PANELS` — the "FULL DETAIL" view per card (sections of bullets).
-- Same order, 4 entries each — keep them in sync.
-
-**Content:**
-- **Experience:** TraceGI (flagship, 5 bullets) · Northeast Store (freelance, *sister company of TraceGI*, incl. one creative-overhaul bullet) · MeECL intern (Snort 3 in state power grid).
-- **Skills:** Security Ops / Infra & Cloud / Languages & Scripting / AI-Native Development.
-- **Projects:** NIDS major project (leads with F1 94.32%) · Azure Sentinel honeypot (200+ alerts).
-- **Education:** B.Tech KIIT (CGPA **7.15**) → KV Shillong XII (8.7) → KV Shillong X (7.9) → eJPT (Certified). DETAILS box **removed** — it duplicated the rows.
-
-**Interaction — made mouse-first this session (keyboard still fully works):**
-- `FULL DETAIL →` and `← SUMMARY` are now real **clickable buttons** (were faint keyboard hints).
-- Footer keyboard cluster (↑↓ / → / ESC) replaced by a single red **`← BACK TO MENU`** button.
-- `Resume` now takes an **`onBack` prop**; `Menu.tsx` passes a handler that plays the close-sfx and transitions to the menu (same behavior as ESC). **⭐ This is the pattern to replicate on the other screens** when making them mouse-first.
-- Summary panel now **sizes to its content** (`maxHeight: 82vh` + scroll) instead of a forced `74vh` — that forced height was pushing FULL DETAIL down onto BACK TO MENU (the overlap bug). Fixed.
-
-> **Parked decision:** the other 3 cards still have their summary highlight boxes (HIGHLIGHTS / ALSO IN THE KIT / NIDS HIGHLIGHTS), which add info not in the rows. Keep them, or strip for a uniform look? Undecided.
-
----
-
-## ✅ DONE — SOCIAL LINKS screen (`components/Socials.tsx`) — 2026-06-14
-
-The old CONTACT/Socials screen is now the **SOCIAL LINKS** screen and the menu was consolidated.
-- **Menu** (`Menu.tsx`) is now **ABOUT · RESUME · PROJECTS · SOCIAL LINKS** — the standalone **GITHUB** and **CONTACT** items were removed; GitHub is folded in as a row. Renamed `LINKS → SOCIAL LINKS` 2026-06-14 to stay true to Persona typography. `screen "socials"`. `components/Github.tsx` is now **dead/unreferenced** (can delete later).
-- **4 rows, real handles:** LinkedIn (`/in/bhargav-kundu-89b788278`, "Bhargav Kundu") · GitHub (`@7Bhargav7`) · Instagram (`@bzekai_7`) · Email (`bhargavkundu9862@gmail.com`). **No YouTube, no Discord** (both declined). Email confirmed = **9862** (not the 5 address).
-- **Character shards** = P3R party-banner shards. Pipeline: Bhargav crops/frames each in an editor → exports one **SVG** (`~/Downloads/persona.svg`, embeds the 2048² atlas as base64 + clip geometry — NOT pre-sliced) → Claude rasterizes with **Node + sharp** (run from project dir, abs paths, `density:300`) → `.extract()` bands + `.trim()` (alpha-based) → `public/images/shards/*.png`. Current: `cyan`(MC)→LinkedIn, `yellow`(Aigis)→GitHub, `pink`→Instagram, `red`→Email; `green`+`dog` sliced as spares. Black-sweep banners come from atlas **`T_UI_Camp_06`** (black version); `_07` is the transparent-coloured one.
-- **Design (agreed w/ Bhargav, per his "SOCIAL LINKS" concept mockup):** per-link **accent colour** (`#48d2ff` cyan / `#e8c100` gold / `#d63bd6` magenta / `#e8002d` red) drives: the active **glow** (`drop-shadow` on the wrapper so it hugs the parallelogram), the angled **accent underlay strip**, and the **handle** text colour on the active white panel. Labels = **Anton**, **skewX(-9deg)** slant (matches mockup). Brand **logos = inline white SVG** (`LOGO_PATHS` map + `<Logo>`), sitting in the **right corner** of each box, dark on active. **RANK/MAX badges intentionally dropped** (too busy). Old emoji icons + stats block + gray "SHADE" overlay all removed.
-- ⚠️ The inlined brand SVG paths are **hand-simplified** (esp. Instagram/GitHub) — swap to exact `simple-icons` paths if Bhargav wants pixel-perfect marks.
-- **Parked:** glow intensity + skew angle are easy to tune; Bhargav was reviewing live. LINKS is already mouse-first (click row = open).
-- **Shatter shards (added 2026-06-14 s2):** active/hover bar now sprays **floating P3R "shatter" particles** off its right edge — accent-coloured CSS clip-path shards, staggered float/rotate/fade loop, defined in `SHARD_FIELD` + `<Shards>` in `Socials.tsx`. Tune via `SHARD_FIELD` (add entries = denser; `tx/ty` = travel; `dur` = speed; `delay` = stagger). This matched his "HOVER / ACTIVE STATE IDEAS" mockup and is **pitch-perfect** per Bhargav.
-
-## ✅ DONE — BACK TO MENU button on all sub-pages — 2026-06-14 s2
-
-The red **`← BACK TO MENU`** button (Resume's pattern) is now on **About, Social Links, and Side Projects** too. Each takes an **`onBack` prop**; `Menu.tsx` has a shared **`backToMenu`** helper (plays closeSfx + `transitionTo("menu")`) passed to all four sub-screens. Existing keyboard-hint clusters were nudged up so they don't overlap the button. ESC still works everywhere. `Github.tsx` still dead/unwired (no onBack).
-
-## 🚧 PARKED — Mobile / responsive view (started 2026-06-14 s4, paused mid-tune)
-
-**Status:** in progress, **Menu screen only**, paused. Desktop is **unaffected** (every change is gated behind an `isMobile` branch). Other 4 screens (Resume, Socials, About, Side Projects) are **still desktop-only / not yet reflowed**.
-
-**The whole site is `vw`/`vh` for a 16:9 desktop frame** — mobile is a *separate vertical reflow per screen*, not a tweak. Decision (Bhargav): **full reflow** approach, **test on his actual phone** over home Wi-Fi.
-
-**Done so far:**
-- New hook `components/useIsMobile.ts` — `matchMedia(max-width:768px)`; each screen branches on it. Reuse for the other screens.
-- `Menu.tsx` mobile branches: video centered (no `translateX(15%)`) + `objectPosition: "22% center"`; **BHARGAV** → horizontal top header (`16vw`) instead of giant rotated side graphic; wallet/status box → top-right, fonts bumped to readable `vw`; nav stack → lower-left (`bottom:6vh; left:5vw`), labels `clamp(2rem,9vw,3.2rem)`; keyboard-controls HUD hidden on mobile.
-- Splash: `onClick` → `onPointerDown` + `touchAction:"manipulation"` (more reliable on touch).
-
-**Dev/testing setup:**
-- Run `npm run dev -- -H 0.0.0.0`, open `http://<PC-IP>:3000` on phone (same Wi-Fi). PC IP was `192.168.1.9` (re-check with `ipconfig`).
-- ⚠️ **Next 16 blocks cross-origin dev resources** → phone couldn't load JS, page was frozen/unresponsive. Fixed via `allowedDevOrigins: ["192.168.1.9"]` in `next.config.ts`. **Update that IP if the LAN IP changes**, or the phone freezes again. (This is dev-only; doesn't affect the deployed Vercel site.)
-
-**Open issue when paused (see Bhargav's phone screenshot):** Menu header/wallet/nav look good, BUT (1) **character was cropped out of frame** — just adjusted `objectPosition` to `22% center` to pull it in, NOT yet confirmed on phone; (2) **big dead blue space in the middle** — expected to fill once the character is in frame; if not, pull the nav up. **Next step = reload on phone, tune `objectPosition` %, then decide on dead space.**
-
----
-
-## ⏭️ NEXT SESSION — TODO
-
-1. **Wire remaining screens with real info.** Resume ✅ · LINKS ✅. Still showing *original owner's* data:
-   - `components/About.tsx` → "Michael Oladimeji, age 26…" + his fun/weird facts. **Bhargav wants to iterate on the design here**, then drop in his real identity. Uses the same shard-bar design as LINKS — likely reuse the new shard/accent/logo system. Also has an **"ENTER TO REVEAL"** affordance that's **illegible + keyboard-only** — Bhargav flagged it: make legible + mouse-interactive.
-   - `components/Sideprojects.tsx` → "COMING SOON" splash, no fake data — fine as-is.
-   - **Screen mapping (current):** ABOUT→`about`, RESUME→`resume`, PROJECTS→`sideproj`, LINKS→`socials`.
-2. **Make the other screens mouse-first** — BACK TO MENU button ✅ (all sub-pages). Still TODO: clickable reveal/controls on About (the ENTER TO REVEAL affordance is still keyboard-only + illegible).
-3. **(Optional) font experiment** on the menu.
-4. **Mobile / responsive view** — see the 🚧 PARKED section above. Menu reflow started & paused mid-tune; other 4 screens not started.
-5. **Deploy** ✅ DONE — see the DEPLOYED section at the top (Vercel + `zykan.me`).
-
-> ⚙️ **Git:** now on Bhargav's own repo `7Bhargav7/Persona-themed-website` (private). **Commit + push to `main` = auto-deploy** to Vercel. Keep videos under 100MB (compress with ffmpeg). The old "never push" rule referred to the original mikedimeji clone and no longer applies.
-
-**Contact facts** (confirmed 2026-06-14):
-Shillong / Bhubaneswar · +91 6009189497 · github.com/7Bhargav7 · linkedin.com/in/bhargav-kundu-89b788278 · Instagram @bzekai_7 · email **`bhargavkundu9862@gmail.com`** ✅ (the resume one — NOT the Claude-profile `5` address). No YouTube.
-
-## Working style reminders (for Claude)
-- Iterate **one element at a time, visually** — Bhargav reacts to the live page, not to numbers. Match his Figma precisely (read coords via the Figma MCP connector).
-- He wants the finished site; he is **not** trying to learn the full web stack here.
-- Aesthetic = **Persona 3 Reload: clean, editorial, minimal** — NOT Persona 5 chaos.
+- `npm run build`: correcto. Compila TypeScript y genera las rutas estáticas `/` y `/_not-found`.
+- `npm run lint`: 14 problemas, 6 errores y 8 avisos. Los errores están en `components/Menu.tsx` y son heredados de la lógica previa de audio/vídeo (`setState` dentro de effects y acceso a refs durante render). No aparecen errores nuevos en las secciones reescritas.
+- No quedan referencias a datos de la plantilla anterior en archivos `ts`, `tsx`, `md`, `json`, `svg` ni `css`.

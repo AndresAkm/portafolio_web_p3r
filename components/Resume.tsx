@@ -2,186 +2,179 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
+type SummaryPanel = {
+  index: string;
+  title: string;
+  progress: string;
+  rows: { index: string; title: string; status: string }[];
+  bottom: { title: string; bullets: string[] };
+};
+
+type DetailSection = {
+  heading: string;
+  date: string;
+  bullets: string[];
+  images?: string[];
+  repo?: string;
+  repoLabel?: string;
+};
+
+type DetailPanel = {
+  title: string;
+  sections: DetailSection[];
+};
+
 const ITEMS = [
-  { id: "i",   badge: "I",   title: "EXPERIENCE",  subtitle: "Production Ops & Security",  rank: 9 },
-  { id: "ii",  badge: "II",  title: "SKILLS",      subtitle: "Security / Infra / Code",    rank: 7 },
-  { id: "iii", badge: "III", title: "PROJECTS",    subtitle: "Security Engineering",       rank: 6 },
-  { id: "iv",  badge: "IV",  title: "EDUCATION",   subtitle: "Degree & Certifications",    rank: 5 },
+  { id: "i",   badge: "I",   title: "EXPERIENCIA", subtitle: "Trayectoria práctica",     rank: 9 },
+  { id: "ii",  badge: "II",  title: "HABILIDADES", subtitle: "Stack principal",          rank: 7 },
+  { id: "iii", badge: "III", title: "PROYECTOS",  subtitle: "Destacados",                rank: 6 },
+  { id: "iv",  badge: "IV",  title: "EDUCACIÓN",  subtitle: "SENA y certificaciones",    rank: 5 },
 ];
 
-// Summary shown in right panel by default
-const SUMMARY_PANELS = [
+const SUMMARY_PANELS: SummaryPanel[] = [
   {
-    index: "01", title: "EXPERIENCE LOG", progress: "3",
+    index: "01", title: "REGISTRO DE TRAYECTORIA", progress: "1",
     rows: [
-      { index: "01", title: "Infra & Security Engineer — TraceGI",          status: "Current" },
-      { index: "02", title: "Infra & Security Consultant — Northeast Store", status: "Current" },
-      { index: "03", title: "Project Intern — MeECL (State Power Grid)",     status: "2025"    },
+      { index: "01", title: "Desarrollador Full-Stack (Proyectos Independientes y Formativos)", status: "2025 – Actualidad" },
     ],
-    bottom: { title: "HIGHLIGHTS", bullets: [
-      "- Operate live platform app.tracegi.com · VPS hardening verified in prod",
-      "- Incident-driven Cloudflare audit · custom Workers for bot mitigation",
-      "- Snort 3 IDS deployed in state power-distribution infrastructure",
+    bottom: { title: "PERFIL", bullets: [
+      "Desarrollador Full-Stack Junior (Web & Mobile)",
+      "Construyendo soluciones web y móviles desde cero con código limpio y arquitectura sólida.",
+      "Antioquia, Colombia · github.com/AndresAkm",
     ]},
   },
   {
-    index: "02", title: "SKILL TREE", progress: "MAX",
+    index: "02", title: "ÁRBOL DE HABILIDADES", progress: "4",
     rows: [
-      { index: "SEC", title: "Snort 3 · MS Sentinel SIEM · Incident Response", status: "Expert"  },
-      { index: "INF", title: "Linux · Docker · Nginx · Cloudflare · Postgres",  status: "Strong"  },
-      { index: "LNG", title: "Python · Bash · PowerShell · SQL",                status: "Working" },
-      { index: "AI",  title: "Agentic Dev (Claude Code) · Docs-as-State",       status: "Native"  },
+      { index: "BACK", title: "Python · Django · Node.js · APIs REST", status: "En uso" },
+      { index: "FRONT", title: "JavaScript (ES6+) · HTML5 · CSS3 · Bootstrap 5 · React · Tailwind CSS · Flutter", status: "En uso" },
+      { index: "DDBB", title: "MySQL · MariaDB · MongoDB · Modelado Entidad-Relación (ER)", status: "Avanzado" },
+      { index: "TOOLS", title: "Git · Linux · Docker · Next.js", status: "En uso" },
     ],
-    bottom: { title: "ALSO IN THE KIT", bullets: [
-      "- TLS · UFW · Fail2Ban · RBAC / auth · REST APIs · Sentry observability",
-      "- Nmap · Wireshark · Metasploit · OWASP Top 10 · MITRE ATT&CK · NIST CSF",
-      "- Microsoft Azure · Git · GitHub-as-source-of-truth deploys",
+    bottom: { title: "KIT PRINCIPAL", bullets: [
+      "Backend con Python, Django y Node.js",
+      "Interfaces web y móviles con React, Flutter, Bootstrap 5 y Tailwind CSS",
+      "Persistencia SQL y NoSQL con MySQL, MariaDB y MongoDB",
     ]},
   },
   {
-    index: "03", title: "PROJECT LOG", progress: "2",
+    index: "03", title: "REGISTRO DE PROYECTOS", progress: "2",
     rows: [
-      { index: "01", title: "Network Intrusion Detection System — Major Project", status: "In Dev" },
-      { index: "02", title: "Azure Sentinel SIEM Honeypot",                        status: "2024"   },
+      { index: "01", title: "Carely — Plataforma E-Commerce & App Móvil", status: "2026" },
+      { index: "02", title: "Anime CLI — Buscador y Catálogo en Terminal", status: "2026" },
     ],
-    bottom: { title: "NIDS HIGHLIGHTS", bullets: [
-      "- Preprocessing pipeline over 2.5M+ CICIDS2017 flows (72 features)",
-      "- Multi-modal autoencoder (RLSTM / xLSTM) → Random Forest classifier",
-      "- 94.32% F1 on a held-out test split",
+    bottom: { title: "IMPACTO", bullets: [
+      "2 plataformas sincronizadas (Web + App móvil) y flujo de pago integrado",
+      "Búsqueda instantánea por consola con filtrado por estado y género",
     ]},
   },
   {
-    index: "04", title: "EDUCATION LOG", progress: "'26",
+    index: "04", title: "REGISTRO ACADÉMICO", progress: "'26",
     rows: [
-      { index: "01", title: "B.Tech CSE — KIIT-DU, Bhubaneswar",   status: "7.15"      },
-      { index: "02", title: "Kendriya Vidyalaya, Shillong (XII)",  status: "8.7"       },
-      { index: "03", title: "Kendriya Vidyalaya, Shillong (X)",    status: "7.9"       },
-      { index: "04", title: "eJPT — Junior Penetration Tester",    status: "Certified" },
+      { index: "01", title: "Tecnólogo en Análisis y Desarrollo de Software — SENA", status: "2023 – 2026" },
+      { index: "02", title: "Curso especial en Construcción de Bases de Datos con MySQL", status: "04 nov 2026" },
+      { index: "03", title: "Curso especial en Implementación de Bases de Datos NoSQL", status: "15 oct 2025" },
     ],
     bottom: { title: "", bullets: [] as string[] },
   },
 ];
 
-// Full expanded detail per card — shown when Enter/→ pressed
-const EXPANDED_PANELS = [
+const EXPANDED_PANELS: DetailPanel[] = [
   {
-    title: "EXPERIENCE — FULL DETAIL",
+    title: "EXPERIENCIA — DETALLE COMPLETO",
     sections: [
       {
-        heading: "Infrastructure & Security Engineer — TraceGI",
-        date: "2026 – Present · Two-person team",
+        heading: "Desarrollador Full-Stack (Proyectos Independientes y Formativos)",
+        date: "2025 – Actualidad · Antioquia, Colombia · Desarrollo Propio / SENA",
         bullets: [
-          "Operate a live production platform (app.tracegi.com) — farmer/cooperative onboarding, QR-based public product provenance, and an ESP32/RFID IoT weighment-ingestion pipeline — preparing it for its first pilot customer",
-          "Hardened the production VPS and verified each control live: UFW + Fail2Ban, TLS, security headers, Docker network isolation, least-privilege PostgreSQL roles",
-          "Closed an open registration endpoint with authentication + role-based access control; verified in production (unauth → 401, non-admin → 403); ran a broader auth review covering credential flows and cryptographic signing",
-          "Stood up error monitoring (Sentry, frontend + backend) and idempotent, self-healing DB migrations with a GitHub-as-source-of-truth deployment workflow",
-          "Built an agentic AI delivery system (Claude Code): persistent sprint/state/decision docs auto-synced via git hooks keep agent context current; every production change is human-verified before deploy",
+          "Diseñé y desarrollé Carely, una plataforma e-commerce de cuidado personal con aplicación web y app móvil en Flutter.",
+          "Implementé persistencia híbrida combinando bases de datos relacionales (MySQL/MariaDB) con almacenamiento documental en MongoDB Atlas.",
+          "Desarrollé herramientas CLI interactivas de consulta de anime desde la terminal consumiendo APIs externas y manejo asíncrono de datos.",
+          "Arquitectura multiplataforma (Web + Android/Flutter), integración de pasarela de pagos (Wompi) y persistencia híbrida SQL + NoSQL.",
         ],
-      },
-      {
-        heading: "Infrastructure & Security Consultant — Northeast Store",
-        date: "2026 – Present · Freelance · sister company of TraceGI",
-        bullets: [
-          "Engaged after a live security incident to audit the full Cloudflare and origin posture: WAF configuration, DNS records, and edge security",
-          "Designed custom Cloudflare Workers for bot mitigation, checkout protection, and real-time threat alerting",
-          "Identified and remediated DNS misconfigurations, tightening domain and mail security",
-          "Separately delivered a storefront-wide creative overhaul — banner and ad-campaign assets — extending the engagement to the client's full digital presence",
-        ],
-      },
-      {
-        heading: "Project Intern — Meghalaya Energy Corporation Ltd. (MeECL)",
-        date: "May – Jun 2025 · Shillong",
-        bullets: [
-          "Deployed Snort 3 IDS/IPS in the production network of state-level power-distribution infrastructure",
-          "Authored 6 custom detection rules targeting ICMP reconnaissance, HTTP attacks, and brute-force attempts",
-          "Administered Linux servers (dependency management, configuration hardening, service optimization) and authored the deployment guide and rollout roadmap adopted for future maintenance",
-        ],
+        repo: "https://github.com/AndresAkm",
+        repoLabel: "VER CÓDIGO",
       },
     ],
   },
   {
-    title: "SKILLS — FULL DETAIL",
+    title: "HABILIDADES — DETALLE COMPLETO",
     sections: [
       {
-        heading: "SECURITY OPERATIONS",
-        date: "",
-        bullets: [
-          "Snort 3 (IDS/IPS) · Microsoft (Azure) Sentinel SIEM · incident response & alert triage",
-          "Nmap · Wireshark · Metasploit · OWASP Top 10 · MITRE ATT&CK · NIST CSF",
-        ],
+        heading: "BACKEND",
+        date: "En uso",
+        bullets: ["Python · Django · Node.js · APIs REST"],
       },
       {
-        heading: "INFRASTRUCTURE & CLOUD",
-        date: "",
-        bullets: [
-          "Linux administration · Docker · Nginx · PostgreSQL · Cloudflare (WAF, Workers, DNS)",
-          "TLS · UFW · Fail2Ban · Microsoft Azure · Git · Sentry (observability)",
-        ],
+        heading: "FRONTEND & MOBILE",
+        date: "En uso",
+        bullets: ["JavaScript (ES6+) · HTML5 · CSS3 · Bootstrap 5 · React · Tailwind CSS · Flutter"],
       },
       {
-        heading: "LANGUAGES & SCRIPTING",
-        date: "",
-        bullets: ["Python · Bash · PowerShell · SQL"],
+        heading: "BASES DE DATOS",
+        date: "Avanzado",
+        bullets: ["MySQL · MariaDB · MongoDB · Modelado Entidad-Relación (ER)"],
       },
       {
-        heading: "AI-NATIVE DEVELOPMENT",
-        date: "",
-        bullets: [
-          "Agentic coding workflows (Claude Code) — spec-driven delegation, docs-as-state context management, human-reviewed production gates",
-        ],
+        heading: "HERRAMIENTAS",
+        date: "En uso",
+        bullets: ["Git · Linux · Docker · Next.js"],
       },
     ],
   },
   {
-    title: "PROJECTS — FULL DETAIL",
+    title: "PROYECTOS — DETALLE COMPLETO",
     sections: [
       {
-        heading: "Network Intrusion Detection System",
-        date: "Jan 2026 – Present · B.Tech Major Project",
+        heading: "Carely — Plataforma E-Commerce & App Móvil",
+        date: "2026 · Desarrollador Full-Stack",
         bullets: [
-          "Engineered a preprocessing pipeline over CICIDS2017 (2.5M+ flow records, 72 features) handling severe class imbalance via stratified sampling, class weighting, and z-score normalization",
-          "Designed a multi-modal autoencoder (parallel RLSTM/xLSTM encoder streams, shared 30-dim bottleneck) separating static and dynamic flow features for DoS, DDoS, brute-force, and infiltration detection",
-          "Achieved 94.32% F1 (97.89% accuracy) feeding compressed embeddings into a Random Forest classifier on a held-out test split",
+          "Problema: Necesidad de una tienda digital moderna para productos de cuidado personal con experiencia fluida tanto en navegador web como en dispositivos móviles y pagos locales.",
+          "Solución: Plataforma integral con backend en Python/Django y Node.js, arquitectura de base de datos híbrida (MySQL/MariaDB + MongoDB Atlas), pasarela de pagos Wompi y app móvil en Flutter.",
+          "Stack: Python, Django, Node.js, Flutter, MySQL, MariaDB, MongoDB Atlas, Bootstrap 5, Wompi.",
+          "Resultados: 2 plataformas sincronizadas (Web + App móvil), catálogo dinámico, carrito de compras y flujo de pago integrado.",
         ],
+        images: ["/projects/carely-1.png", "/projects/carely-2.png"],
+        repo: "https://github.com/AndresAkm/Carely",
+        repoLabel: "VER REPOSITORIO",
       },
       {
-        heading: "Azure Sentinel SIEM Honeypot",
-        date: "Nov – Dec 2024",
+        heading: "Anime CLI — Buscador y Catálogo de Anime en Terminal",
+        date: "2026 · Desarrollador Backend / CLI",
         bullets: [
-          "Exposed a deliberately vulnerable Azure VM; triaged 200+ real-world brute-force alerts in Microsoft Sentinel, correlating telemetry with geolocation threat intelligence",
-          "Automated log ingestion, alert aggregation, and access monitoring with PowerShell in a simulated SOC workflow",
+          "Problema: Consultar sinopsis, puntuaciones, episodios y estados de emisión de anime de forma rápida y ligera sin abrir navegadores pesados.",
+          "Solución: Aplicación de línea de comandos interactiva que consume APIs públicas de anime, procesa respuestas JSON de forma asíncrona y renderiza tablas y fichas estilizadas directamente en la terminal.",
+          "Stack: JavaScript / Node.js, Python, REST API, CLI.",
+          "Resultados: Búsqueda instantánea por consola, filtrado por estado/género y cero consumo gráfico de navegador.",
         ],
+        images: ["/projects/anime-cli-1.png"],
+        repo: "https://github.com/AndresAkm",
+        repoLabel: "VER REPOSITORIO",
       },
     ],
   },
   {
-    title: "EDUCATION — FULL DETAIL",
+    title: "EDUCACIÓN — DETALLE COMPLETO",
     sections: [
       {
-        heading: "B.Tech, Computer Science & Engineering — KIIT-DU",
-        date: "2022 – 2026 · Bhubaneswar",
-        bullets: [
-          "CGPA 7.15",
-          "Final-year major project: ML-based Network Intrusion Detection System (see Projects)",
-        ],
+        heading: "Tecnólogo en Análisis y Desarrollo de Software",
+        date: "2023 – 2026 (En curso) · SENA · Antioquia, Colombia",
+        bullets: ["Formación técnica en análisis, diseño y desarrollo de software."],
       },
       {
-        heading: "Kendriya Vidyalaya, Shillong",
-        date: "2019 – 2022",
-        bullets: [
-          "Intermediate (Class XII): 8.7",
-          "Matriculation (Class X): 7.9",
-        ],
+        heading: "Curso Especial en Construcción de Bases de Datos con MySQL",
+        date: "Certificado el 04 de noviembre de 2026 · SENA",
+        bullets: ["Modelado y construcción de bases de datos relacionales con MySQL."],
       },
       {
-        heading: "CERTIFICATIONS",
-        date: "",
-        bullets: [
-          "eJPT — eLearnSecurity Junior Penetration Tester (Oct 2025)",
-        ],
+        heading: "Curso Especial en Implementación de Bases de Datos NoSQL",
+        date: "Certificado el 15 de octubre de 2025 · SENA",
+        bullets: ["Implementación de bases de datos documentales con enfoque NoSQL."],
       },
     ],
   },
@@ -191,12 +184,60 @@ const EXPANDED_PANELS = [
 
 const panelBg    = "linear-gradient(180deg, rgba(15,28,105,0.96) 0%, rgba(8,16,68,0.97) 100%)";
 const panelClip  = "polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%)";
-const rowClip    = "polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%)";
+const rowClip   = "polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%)";
+
+function ProjectShot({ src, label, wide = false }: { src: string; label: string; wide?: boolean }) {
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <div style={{
+      position: "relative",
+      flex: wide ? "1 1 100%" : "0 0 132px",
+      width: wide ? "100%" : 132,
+      height: wide ? undefined : 88,
+      aspectRatio: wide ? "3 / 2" : undefined,
+      background: "linear-gradient(135deg, rgba(15,28,105,0.98) 0%, rgba(4,10,44,0.98) 100%)",
+      clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)",
+      boxShadow: "inset 0 0 0 1px rgba(141,246,255,0.32)",
+      overflow: "hidden",
+    }}>
+      {!failed ? (
+        <img
+          src={src}
+          alt={`Captura de ${label}`}
+          onError={() => setFailed(true)}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+      ) : (
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 4,
+          padding: 8,
+          textAlign: "center",
+        }}>
+          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: 2, color: "#8df6ff" }}>
+            CAPTURA PENDIENTE
+          </span>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: 9, lineHeight: 1.25, color: "rgba(205,232,255,0.72)" }}>
+            {label}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── COMPONENT ─────────────────────────────────────────────────────────────────
 
 export default function Resume({ onBack }: { onBack?: () => void }) {
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
   const [active, setActive]     = useState(0);
   const [mounted, setMounted]   = useState(false);
   const [expanded, setExpanded] = useState(false); // Enter/→ shows full detail
@@ -223,11 +264,103 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
   const summary  = SUMMARY_PANELS[active];
   const detail   = EXPANDED_PANELS[active];
 
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden" id="resume-screen">
+        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
+          <source src="/videos/skills.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.55) 0%, rgba(4,9,26,0.82) 100%)" }} />
+        <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "18px 16px calc(104px + var(--safe-bottom))" }}>
+          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,9vw,3rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 12 }}>LISTA</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {ITEMS.map((item, index) => {
+              const isActive = active === index;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => { setActive(index); setExpanded(false); }}
+                  style={{ width: "100%", minHeight: 74, display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", textAlign: "left", cursor: "pointer", background: isActive ? "#ffffff" : "#10185f", color: isActive ? "#0a0f1c" : "#cde8ff", border: "none", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: isActive ? "5px 5px 0 #d63232" : "0 5px 0 rgba(5,13,59,0.85)" }}
+                >
+                  <span style={{ flex: "0 0 42px", height: 52, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#d2fdff", background: "#0b113d", clipPath: "polygon(14% 0, 100% 0, 84% 100%, 0 100%)" }}>{item.badge}</span>
+                  <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
+                    <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.05rem,5vw,1.5rem)", lineHeight: 1 }}>{item.title}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.7rem,3.2vw,0.85rem)", letterSpacing: 1, opacity: 0.78 }}>{item.subtitle}</span>
+                  </span>
+                  <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.4rem,6vw,2rem)", color: isActive ? "#c4001a" : "#8df6ff" }}>{item.rank}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ marginTop: 16, padding: 14, background: panelBg, clipPath: panelClip, boxShadow: "inset 0 0 0 1px rgba(133,244,255,0.16), 8px 8px 0 rgba(0,6,30,0.55)" }}>
+            <div style={{ margin: -14, marginBottom: 14, padding: "12px 14px", background: "linear-gradient(90deg, #8ef5ff 0%, #d3fdff 100%)", color: "#08153f", fontFamily: "'Anton', sans-serif", fontSize: "clamp(1rem,4.6vw,1.35rem)", letterSpacing: 1, clipPath: "polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%)" }}>
+              {expanded ? detail.title : summary.title}
+            </div>
+            {!expanded ? (
+              <>
+                {summary.rows.map((row, index) => (
+                  <div key={index} style={{ display: "flex", flexDirection: "column", gap: 2, padding: "10px 12px", marginBottom: 8, background: "rgba(8,18,72,0.96)", borderLeft: "3px solid #8df6ff" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 1, color: "#8df6ff" }}>{row.index}</span>
+                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 1, color: "#ff5e88" }}>{row.status}</span>
+                    </div>
+                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.82rem,3.6vw,0.95rem)", lineHeight: 1.35, color: "#cde8ff" }}>{row.title}</span>
+                  </div>
+                ))}
+                {summary.bottom.title && (
+                  <div style={{ marginTop: 12, padding: 12, background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.2)" }}>
+                    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: 2, color: "#8df6ff", marginBottom: 6 }}>{summary.bottom.title}</div>
+                    {summary.bottom.bullets.map((bullet, index) => (
+                      <div key={index} style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.75rem,3.3vw,0.88rem)", lineHeight: 1.4, color: "#cde8ff", marginTop: 4 }}>{bullet}</div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {detail.sections.map((section, index) => (
+                  <div key={index} style={{ padding: 12, background: "rgba(8,18,72,0.96)", borderLeft: "3px solid #8df6ff" }}>
+                    <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1rem,4.6vw,1.3rem)", lineHeight: 1.1, color: "#8df6ff" }}>{section.heading}</div>
+                    {section.date && <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.7rem,3vw,0.82rem)", letterSpacing: 1, color: "rgba(133,244,255,0.62)", marginTop: 3 }}>{section.date}</div>}
+                    {section.bullets.map((bullet, bulletIndex) => (
+                      <div key={bulletIndex} style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.76rem,3.35vw,0.88rem)", lineHeight: 1.45, color: "#cde8ff", marginTop: 8, paddingLeft: 10, borderLeft: "2px solid rgba(133,244,255,0.25)" }}>{bullet}</div>
+                    ))}
+                    {section.images && section.images.length > 0 && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+                        {section.images.map(image => <ProjectShot key={image} src={image} label={section.heading} wide />)}
+                      </div>
+                    )}
+                    {section.repo && (
+                      <a href={section.repo} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 12, padding: "6px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 2, color: "#08153f", background: "#8df6ff", textDecoration: "none" }}>
+                        {section.repoLabel ?? "VER REPOSITORIO"} →
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setExpanded(value => !value)} style={{ width: "100%", minHeight: 46, marginTop: 14, fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2, color: "#8df6ff", background: "transparent", border: "2px solid rgba(141,246,255,0.65)", borderRadius: 4, cursor: "pointer" }}>
+              {expanded ? "← RESUMEN" : "DETALLE COMPLETO →"}
+            </button>
+          </div>
+          <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 2, color: "rgba(220,240,255,0.7)", background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.22)" }}>
+            <span>CURRÍCULUM PDF</span>
+            <span style={{ color: "#ff5e88" }}>PRÓXIMAMENTE</span>
+          </div>
+        </div>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>VOLVER AL MENÚ</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden" id="resume-screen">
 
       {/* BG VIDEO */}
-      <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+      <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline className="absolute inset-0 w-full h-full object-cover">
         <source src="/videos/skills.mp4" type="video/mp4" />
       </video>
 
@@ -239,7 +372,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
         animation: "resume-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
         pointerEvents: "none",
       }}>
-        <video autoPlay loop muted playsInline style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}>
+        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}>
           <source src="/videos/skills.mp4" type="video/mp4" />
         </video>
       </div>
@@ -263,7 +396,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
           color: "#f6fbff", letterSpacing: 2, margin: "0 0 6px 12px",
           opacity: mounted ? 1 : 0, transform: mounted ? "translateX(0)" : "translateX(-24px)",
           transition: "opacity 0.35s ease, transform 0.35s ease",
-        }}>LIST</div>
+        }}>LISTA</div>
 
         {ITEMS.map((item, index) => {
           const isActive = active === index;
@@ -303,7 +436,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                 <div style={{ position: "absolute", inset: 0, padding: "14px 22px 14px 62px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", zIndex: 1 }}>
                   <div style={{ fontFamily: "'Anton', sans-serif", fontSize: 56, lineHeight: 0.9, letterSpacing: 1, color: isActive ? "#000" : "#a5f6ff", transition: "color 0.22s ease" }}>{item.title}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 2, flexShrink: 0 }}>
-                    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: 2, color: isActive ? "#000" : "#9ffbff", transition: "color 0.22s ease" }}>RANK</div>
+                    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: 2, color: isActive ? "#000" : "#9ffbff", transition: "color 0.22s ease" }}>RANGO</div>
                     <div style={{ fontFamily: "'Anton', sans-serif", fontSize: 70, lineHeight: 0.82, color: isActive ? "#000" : "#9ffbff", transition: "color 0.22s ease" }}>{item.rank}</div>
                   </div>
                 </div>
@@ -394,7 +527,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                   boxShadow: "5px 5px 0 rgba(255,94,136,0.85)",
                 }}
               >
-                <span style={{ lineHeight: 1 }}>FULL DETAIL</span>
+                <span style={{ lineHeight: 1 }}>DETALLE COMPLETO</span>
                 <span style={{ fontSize: 22, lineHeight: 1 }}>→</span>
               </button>
             </div>
@@ -428,7 +561,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
               color: "#08153f", boxShadow: "10px 0 0 rgba(255,94,136,0.88)",
             }}>
               <div style={{ fontFamily: "'Anton', sans-serif", fontSize: 32, lineHeight: 1, letterSpacing: 1 }}>{detail.title}</div>
-              <button onClick={() => setExpanded(false)} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: 2, color: "#08153f", background: "transparent", border: "2px solid #08153f", borderRadius: 4, padding: "5px 12px", cursor: "pointer" }}>← SUMMARY</button>
+              <button onClick={() => setExpanded(false)} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: 2, color: "#08153f", background: "transparent", border: "2px solid #08153f", borderRadius: 4, padding: "5px 12px", cursor: "pointer" }}>← RESUMEN</button>
             </div>
 
             {/* SECTIONS */}
@@ -455,6 +588,29 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                       borderLeft: "2px solid rgba(133,244,255,0.25)",
                     }}>{b}</div>
                   ))}
+                  {section.images && section.images.length > 0 && (
+                    <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+                      {section.images.map(image => (
+                        <ProjectShot key={image} src={image} label={section.heading} />
+                      ))}
+                    </div>
+                  )}
+                  {section.repo && (
+                    <a
+                      href={section.repo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 8,
+                        marginTop: 12, padding: "5px 12px",
+                        fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+                        color: "#08153f", background: "#8df6ff", textDecoration: "none",
+                        clipPath: "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
+                      }}
+                    >
+                      {section.repoLabel ?? "VER REPOSITORIO"} →
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -472,7 +628,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                 }}
               >
                 <span style={{ fontSize: 22, lineHeight: 1 }}>←</span>
-                <span style={{ lineHeight: 1 }}>SUMMARY</span>
+                <span style={{ lineHeight: 1 }}>RESUMEN</span>
               </button>
             </div>
 
@@ -481,7 +637,24 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
         )}
       </AnimatePresence>
 
-      {/* BACK TO MENU */}
+      <div
+        aria-disabled="true"
+        style={{
+          position: "absolute", bottom: 22, left: 28, zIndex: 20,
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "8px 14px",
+          fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+          color: "rgba(220,240,255,0.72)", background: "rgba(6,12,38,0.82)",
+          border: "2px solid rgba(141,246,255,0.28)", borderRadius: 4,
+          opacity: mounted ? 1 : 0, transition: "opacity 0.4s ease 0.6s",
+          pointerEvents: "none",
+        }}
+      >
+        <span>CURRÍCULUM PDF</span>
+        <span style={{ color: "#ff5e88" }}>PRÓXIMAMENTE</span>
+      </div>
+
+      {/* VOLVER AL MENÚ */}
       <button
         onClick={() => onBack?.()}
         style={{
@@ -496,7 +669,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
         }}
       >
         <span style={{ fontSize: 22, lineHeight: 1 }}>←</span>
-        <span style={{ lineHeight: 1 }}>BACK TO MENU</span>
+        <span style={{ lineHeight: 1 }}>VOLVER AL MENÚ</span>
       </button>
 
     </div>

@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
-// P3R party-banner shards sliced from T_UI_Camp_07 — one varied colour per link
 const CHARS = [
-  "/images/shards/cyan.png",   // LinkedIn  — MC blue
-  "/images/shards/yellow.png", // GitHub    — Aigis gold
-  "/images/shards/pink.png",   // Instagram — magenta
-  "/images/shards/red.png",    // Email     — red
+  "/images/shards/cyan.png",
+  "/images/shards/yellow.png",
+  "/images/shards/pink.png",
+  "/images/shards/red.png",
 ];
 
 const ITEMS = [
@@ -19,10 +19,10 @@ const ITEMS = [
     label: "LINKEDIN",
     logo: "linkedin",
     accent: "#48d2ff",
-    href: "https://www.linkedin.com/in/bhargav-kundu-89b788278",
-    handle: "Bhargav Kundu",
+    href: "https://www.linkedin.com/in/jaime-andr%C3%A9s-parra-sanchez-365586378/",
+    handle: "Jaime Andrés Parra Sánchez",
     links: [
-      { label: "PROFILE", url: "https://www.linkedin.com/in/bhargav-kundu-89b788278" },
+      { label: "PERFIL PROFESIONAL", url: "https://www.linkedin.com/in/jaime-andr%C3%A9s-parra-sanchez-365586378/" },
     ],
   },
   {
@@ -30,10 +30,10 @@ const ITEMS = [
     label: "GITHUB",
     logo: "github",
     accent: "#e8c100",
-    href: "https://github.com/7Bhargav7",
-    handle: "@7Bhargav7",
+    href: "https://github.com/AndresAkm",
+    handle: "@AndresAkm",
     links: [
-      { label: "PROFILE", url: "https://github.com/7Bhargav7" },
+      { label: "VER CÓDIGO", url: "https://github.com/AndresAkm" },
     ],
   },
   {
@@ -41,21 +41,21 @@ const ITEMS = [
     label: "INSTAGRAM",
     logo: "instagram",
     accent: "#d63bd6",
-    href: "https://www.instagram.com/bzekai_7",
-    handle: "@bzekai_7",
+    href: "https://www.instagram.com/andres_akm_",
+    handle: "@andres_akm_",
     links: [
-      { label: "PROFILE", url: "https://www.instagram.com/bzekai_7" },
+      { label: "RED SOCIAL", url: "https://www.instagram.com/andres_akm_" },
     ],
   },
   {
     id: "email",
-    label: "EMAIL",
+    label: "CORREO",
     logo: "email",
     accent: "#e8002d",
-    href: "mailto:bhargavkundu9862@gmail.com",
-    handle: "bhargavkundu9862@gmail.com",
+    href: "mailto:jaym3gd2431@gmail.com",
+    handle: "jaym3gd2431@gmail.com",
     links: [
-      { label: "COMPOSE", url: "mailto:bhargavkundu9862@gmail.com" },
+      { label: "REDACTAR CORREO", url: "mailto:jaym3gd2431@gmail.com" },
     ],
   },
 ];
@@ -132,6 +132,8 @@ function Logo({ id, color, size = "1.94vw" }: { id: string; color: string; size?
 
 export default function Socials({ onBack }: { onBack?: () => void }) {
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
   const [active, setActive]           = useState(0);
   const [mounted, setMounted]         = useState(false);
   const [activeLink, setActiveLink]   = useState(0);
@@ -191,12 +193,56 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
 
   const item = ITEMS[active];
 
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden" id="socials-screen">
+        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
+          <source src="/videos/status.enhanced.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
+        <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))" }}>
+          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 4 }}>ENLACES</div>
+          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.75rem,3.3vw,0.9rem)", letterSpacing: 2, color: "rgba(205,232,255,0.65)", marginBottom: 16 }}>PERFIL PROFESIONAL Y CONTACTO</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {ITEMS.map((linkItem, index) => (
+              <button
+                key={linkItem.id}
+                onClick={() => { setActive(index); openLink(linkItem.href); }}
+                style={{ position: "relative", width: "100%", minHeight: 76, padding: 0, textAlign: "left", cursor: "pointer", background: "transparent", border: "none" }}
+              >
+                <div style={{ position: "absolute", inset: "6px -4px -6px 6px", background: linkItem.accent, clipPath: "polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%)", opacity: active === index ? 1 : 0.55 }} />
+                <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 12, minHeight: 76, padding: "12px 14px", background: active === index ? "#fafbff" : "rgba(10,15,28,0.9)", clipPath: "polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%)" }}>
+                  <span style={{ flex: "0 0 40px", height: 40, display: "flex", alignItems: "center", justifyContent: "center", background: linkItem.accent, clipPath: "polygon(14% 0, 100% 0, 86% 100%, 0 100%)" }}>
+                    <Logo id={linkItem.logo} color="#fff" size="24px" />
+                  </span>
+                  <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
+                    <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.1rem,5vw,1.45rem)", lineHeight: 1, color: active === index ? "#0a0f1c" : "#f6fbff" }}>{linkItem.label}</span>
+                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.78rem,3.4vw,0.9rem)", lineHeight: 1.25, color: active === index ? "rgba(10,15,28,0.68)" : "rgba(205,232,255,0.72)" }}>{linkItem.handle}</span>
+                  </span>
+                  <span style={{ flexShrink: 0, fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.75rem,3.2vw,0.88rem)", letterSpacing: 1, color: active === index ? linkItem.accent : "rgba(141,246,255,0.72)" }}>{linkItem.links[0].label}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 2, color: "rgba(220,240,255,0.7)", background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.22)" }}>
+            <span>CURRÍCULUM PDF</span>
+            <span style={{ color: "#ff5e88" }}>PRÓXIMAMENTE</span>
+          </div>
+        </div>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+          <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
+          <span>VOLVER AL MENÚ</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden" id="socials-screen">
 
       {/* BG VIDEO */}
       <video
-        autoPlay loop muted playsInline
+        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/status.enhanced.mp4" type="video/mp4" />
@@ -216,7 +262,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         }}
       >
         <video
-          autoPlay loop muted playsInline
+          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         >
           <source src="/videos/status.enhanced.mp4" type="video/mp4" />
@@ -618,12 +664,30 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                   userSelect: "none",
                 }}
               >
-                OPEN <span className={live ? "sc-arrow-right" : ""} style={{ fontSize: "1.18vw" }}>→</span>
+                ABRIR <span className={live ? "sc-arrow-right" : ""} style={{ fontSize: "1.18vw" }}>→</span>
               </span>
             </div>
           </div>
         );
       })}
+
+      {mounted && (
+        <div
+          aria-disabled="true"
+          style={{
+            position: "fixed", bottom: "2.4vh", left: "1.94vw", zIndex: 60,
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "10px 14px",
+            fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+            color: "rgba(220,240,255,0.72)", background: "rgba(6,12,38,0.82)",
+            border: "2px solid rgba(141,246,255,0.28)", borderRadius: 4,
+            pointerEvents: "none",
+          }}
+        >
+          <span>CURRÍCULUM PDF</span>
+          <span style={{ color: "#ff5e88" }}>PRÓXIMAMENTE</span>
+        </div>
+      )}
 
       {/* FOOTER HINTS */}
       <div
@@ -641,7 +705,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
           transition: "opacity 0.4s ease 0.6s",
         }}
       >
-        {[["↑↓", "SELECT"], ["→", "LINKS"], ["↵", "OPEN"], ["ESC", "BACK"]].map(([key, label]) => (
+        {[["↑↓", "SELECCIONAR"], ["→", "ENLACES"], ["↵", "ABRIR"], ["ESC", "VOLVER"]].map(([key, label]) => (
           <div key={key} style={{ display: "flex", alignItems: "center", gap: "0.55vw", fontSize: "0.9vw", letterSpacing: "0.14vw", color: "rgba(255,255,255,0.22)" }}>
             <span style={{ border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, padding: "0.07vw 0.42vw", fontSize: "0.76vw" }}>{key}</span>
             <span>{label}</span>
@@ -649,7 +713,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         ))}
       </div>
 
-      {/* BACK TO MENU */}
+      {/* VOLVER AL MENÚ */}
       <button
         onClick={() => onBack?.()}
         style={{
@@ -664,7 +728,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         }}
       >
         <span style={{ fontSize: 22, lineHeight: 1 }}>←</span>
-        <span style={{ lineHeight: 1 }}>BACK TO MENU</span>
+        <span style={{ lineHeight: 1 }}>VOLVER AL MENÚ</span>
       </button>
 
     </div>
