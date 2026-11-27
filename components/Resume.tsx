@@ -186,7 +186,7 @@ const EXPANDED_PANELS: DetailPanel[] = [
   },
 ];
 
-// ── SHARED STYLES ─────────────────────────────────────────────────────────────
+// ── SHARED STYLES ────────────────────────────────────────────────────────────
 
 const panelBg    = "linear-gradient(135deg, rgba(19,43,132,0.97) 0%, rgba(9,22,86,0.97) 52%, rgba(4,11,50,0.98) 100%)";
 const panelClip  = "polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%)";
