@@ -665,8 +665,6 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                 <img
                   src={CHARS[i]}
                   alt=""
-                  decoding="async"
-                  loading="lazy"
                   style={{
                     position: "absolute",
                     top: 0, left: 0,

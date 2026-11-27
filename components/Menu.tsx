@@ -53,7 +53,13 @@ const SCREEN_MEDIA: Record<string, string[]> = {
   about:    ["/images/about-makoto.png", "/images/p5-logo.png"],
   resume:   ["/videos/skills.mp4"],
   github:   ["/videos/equip.mp4", "/images/char1.png"],
-  socials:  ["/videos/status.enhanced.mp4"],
+  socials:  [
+    "/videos/status.enhanced.mp4",
+    "/images/shards/cyan.png",
+    "/images/shards/yellow.png",
+    "/images/shards/pink.png",
+    "/images/shards/red.png",
+  ],
   sideproj: ["/videos/skills.mp4"],
 };
 
