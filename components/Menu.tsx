@@ -66,14 +66,30 @@ const SCREEN_VIDEO: Record<string, string | null> = {
   socials:  "status",
 };
 
-const SCREEN_POSTER: Record<string, string> = {
-  menu:     "/posters/menu.webp",
-  about:    "/images/about-makoto.webp",
-  resume:   "/posters/skills.webp",
-  sideproj: "/posters/skills.webp",
-  github:   "/posters/equip.webp",
-  socials:  "/posters/status.enhanced.webp",
+const SCREEN_IMAGES: Record<string, string[]> = {
+  menu:     [],
+  about:    ["/images/about-makoto.webp", "/images/p5-logo.webp"],
+  resume:   ["/projects/carely-1.webp", "/projects/carely-2.webp", "/projects/anime-cli-1.webp"],
+  sideproj: [],
+  github:   ["/images/char1.webp"],
+  socials:  [
+    "/images/shards/cyan.png",
+    "/images/shards/yellow.png",
+    "/images/shards/pink.png",
+    "/images/shards/red.png",
+  ],
 };
+
+const warmedImages = new Set<string>();
+
+function warmImages(screen: string) {
+  for (const url of SCREEN_IMAGES[screen] ?? []) {
+    if (warmedImages.has(url)) continue;
+    warmedImages.add(url);
+    const image = new Image();
+    image.src = url;
+  }
+}
 
 const SCREEN_LOADERS: Record<string, () => Promise<unknown>> = {
   about:      loadAbout,
@@ -162,7 +178,6 @@ export default function Menu() {
   // Use a ref for variant so it's always current when Transition mounts
   const variantRef = useRef<Variant>("panel");
   const [transitionVariant, setTransitionVariant] = useState<Variant>("panel");
-  const [transitionPoster, setTransitionPoster] = useState(SCREEN_POSTER.menu);
 
   const [warmedVideos, setWarmedVideos] = useState<Set<string>>(() => new Set());
   const warmedVideosRef = useRef<Set<string>>(new Set());
@@ -199,6 +214,7 @@ export default function Menu() {
   const warmScreen = useCallback((screen: string) => {
     warmChunk(screen);
     warmChunk("transition");
+    warmImages(screen);
     warmVideo(SCREEN_VIDEO[screen] ?? null);
   }, [warmChunk, warmVideo]);
 
@@ -285,7 +301,6 @@ export default function Menu() {
     const variant = VARIANT_MAP[screen] ?? "default";
     variantRef.current = variant;
     setTransitionVariant(variant);
-    setTransitionPoster(SCREEN_POSTER[screen] ?? SCREEN_POSTER.menu);
 
     // Small rAF delay ensures the state has flushed before Transition mounts
     requestAnimationFrame(() => {
@@ -753,9 +768,8 @@ export default function Menu() {
           {isTransitioning && (
             <Suspense fallback={null}>
               <Transition
-                key={`${transitionVariant}-${transitionPoster}`}
+                key={transitionVariant}
                 variant={transitionVariant}
-                poster={transitionPoster}
               />
             </Suspense>
           )}

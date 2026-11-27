@@ -105,8 +105,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
 
   if (isMobile) {
     return (
-      <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230" }}>
-        <div className="absolute inset-0 select-none" style={{ zIndex: 0, pointerEvents: "none", backgroundImage: "url('/images/about-makoto.webp')", backgroundSize: "cover", backgroundPosition: "32% center" }} />
+      <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230", backgroundImage: "url('/images/about-makoto.webp')", backgroundSize: "cover", backgroundPosition: "32% center" }}>
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.15) 0%, rgba(4,9,26,0.55) 55%, rgba(4,9,26,0.9) 100%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 12, padding: "18px 16px calc(88px + var(--safe-bottom))" }}>
           <div style={{ alignSelf: "flex-end", marginRight: 4, padding: "5px 12px 6px", background: "#0a1230", color: "#8df6ff", fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(18px,5.5vw,24px)", letterSpacing: 3, clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
@@ -141,13 +140,15 @@ export default function About({ onBack }: { onBack?: () => void }) {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230" }}>
+    <div className="absolute inset-0 overflow-hidden" style={{ background: "#0a1230", backgroundImage: "url('/images/about-makoto.webp')", backgroundSize: "cover", backgroundPosition: "center" }}>
 
       {/* ── BACKGROUND ART (Makoto + ABOUT + scene) ── */}
       <motion.img
         src="/images/about-makoto.webp"
         alt=""
         decoding="async"
+        loading="eager"
+        fetchPriority="high"
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
