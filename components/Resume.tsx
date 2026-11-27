@@ -22,6 +22,8 @@ type DetailSection = {
   images?: string[];
   repo?: string;
   repoLabel?: string;
+  certificate?: string;
+  certificateLabel?: string;
 };
 
 type DetailPanel = {
@@ -152,8 +154,8 @@ const EXPANDED_PANELS: DetailPanel[] = [
           "Stack: JavaScript / Node.js, Python, REST API, CLI.",
           "Resultados: Búsqueda instantánea por consola, filtrado por estado/género y cero consumo gráfico de navegador.",
         ],
-        images: ["/projects/anime-cli-1.png"],
-        repo: "https://github.com/AndresAkm",
+        images: ["/projects/anime-cli-1.jpg"],
+        repo: "https://github.com/AndresAkm/ani-esp.git",
         repoLabel: "VER REPOSITORIO",
       },
     ],
@@ -170,11 +172,15 @@ const EXPANDED_PANELS: DetailPanel[] = [
         heading: "Curso Especial en Construcción de Bases de Datos con MySQL",
         date: "Certificado el 04 de noviembre de 2026 · SENA",
         bullets: ["Modelado y construcción de bases de datos relacionales con MySQL."],
+        certificate: "/certificates/sena-mysql-2026.pdf",
+        certificateLabel: "VER CERTIFICADO",
       },
       {
         heading: "Curso Especial en Implementación de Bases de Datos NoSQL",
         date: "Certificado el 15 de octubre de 2025 · SENA",
         bullets: ["Implementación de bases de datos documentales con enfoque NoSQL."],
+        certificate: "/certificates/sena-nosql-2025.pdf",
+        certificateLabel: "VER CERTIFICADO",
       },
     ],
   },
@@ -182,9 +188,21 @@ const EXPANDED_PANELS: DetailPanel[] = [
 
 // ── SHARED STYLES ─────────────────────────────────────────────────────────────
 
-const panelBg    = "linear-gradient(180deg, rgba(15,28,105,0.96) 0%, rgba(8,16,68,0.97) 100%)";
+const panelBg    = "linear-gradient(135deg, rgba(19,43,132,0.97) 0%, rgba(9,22,86,0.97) 52%, rgba(4,11,50,0.98) 100%)";
 const panelClip  = "polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%)";
 const rowClip   = "polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%)";
+const bottomBg   = "linear-gradient(120deg, rgba(5,13,57,0.98) 0%, rgba(10,30,92,0.97) 100%)";
+const CARD_BLUES = ["#10185f", "#123b88", "#0d2f77", "#17479d"];
+const BADGE_BLUES = ["#0b113d", "#0a235c", "#0a1d52", "#0b2c69"];
+const ROW_BLUES = [
+  "linear-gradient(100deg, rgba(8,18,72,0.98) 0%, rgba(14,38,112,0.96) 100%)",
+  "linear-gradient(100deg, rgba(10,30,94,0.98) 0%, rgba(18,55,132,0.96) 100%)",
+  "linear-gradient(100deg, rgba(7,24,82,0.98) 0%, rgba(13,47,120,0.96) 100%)",
+  "linear-gradient(100deg, rgba(12,36,104,0.98) 0%, rgba(22,66,146,0.96) 100%)",
+];
+const cardBg = (index: number) => CARD_BLUES[index % CARD_BLUES.length];
+const badgeBg = (index: number) => BADGE_BLUES[index % BADGE_BLUES.length];
+const rowBg = (index: number) => ROW_BLUES[index % ROW_BLUES.length];
 
 function ProjectShot({ src, label, wide = false }: { src: string; label: string; wide?: boolean }) {
   const [failed, setFailed] = useState(false);
@@ -280,9 +298,9 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                 <button
                   key={item.id}
                   onClick={() => { setActive(index); setExpanded(false); }}
-                  style={{ width: "100%", minHeight: 74, display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", textAlign: "left", cursor: "pointer", background: isActive ? "#ffffff" : "#10185f", color: isActive ? "#0a0f1c" : "#cde8ff", border: "none", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: isActive ? "5px 5px 0 #d63232" : "0 5px 0 rgba(5,13,59,0.85)" }}
+                  style={{ width: "100%", minHeight: 74, display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", textAlign: "left", cursor: "pointer", background: isActive ? "#ffffff" : cardBg(index), color: isActive ? "#0a0f1c" : "#cde8ff", border: "none", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: isActive ? "5px 5px 0 #d63232" : "0 5px 0 rgba(5,13,59,0.85)" }}
                 >
-                  <span style={{ flex: "0 0 42px", height: 52, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#d2fdff", background: "#0b113d", clipPath: "polygon(14% 0, 100% 0, 84% 100%, 0 100%)" }}>{item.badge}</span>
+                  <span style={{ flex: "0 0 42px", height: 52, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#d2fdff", background: badgeBg(index), clipPath: "polygon(14% 0, 100% 0, 84% 100%, 0 100%)" }}>{item.badge}</span>
                   <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
                     <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.05rem,5vw,1.5rem)", lineHeight: 1 }}>{item.title}</span>
                     <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.7rem,3.2vw,0.85rem)", letterSpacing: 1, opacity: 0.78 }}>{item.subtitle}</span>
@@ -299,7 +317,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
             {!expanded ? (
               <>
                 {summary.rows.map((row, index) => (
-                  <div key={index} style={{ display: "flex", flexDirection: "column", gap: 2, padding: "10px 12px", marginBottom: 8, background: "rgba(8,18,72,0.96)", borderLeft: "3px solid #8df6ff" }}>
+                  <div key={index} style={{ display: "flex", flexDirection: "column", gap: 2, padding: "10px 12px", marginBottom: 8, background: rowBg(index), borderLeft: "3px solid #8df6ff" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                       <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 1, color: "#8df6ff" }}>{row.index}</span>
                       <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 1, color: "#ff5e88" }}>{row.status}</span>
@@ -308,7 +326,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                   </div>
                 ))}
                 {summary.bottom.title && (
-                  <div style={{ marginTop: 12, padding: 12, background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.2)" }}>
+                  <div style={{ marginTop: 12, padding: 12, background: bottomBg, border: "1px solid rgba(141,246,255,0.2)" }}>
                     <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: 2, color: "#8df6ff", marginBottom: 6 }}>{summary.bottom.title}</div>
                     {summary.bottom.bullets.map((bullet, index) => (
                       <div key={index} style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.75rem,3.3vw,0.88rem)", lineHeight: 1.4, color: "#cde8ff", marginTop: 4 }}>{bullet}</div>
@@ -319,7 +337,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {detail.sections.map((section, index) => (
-                  <div key={index} style={{ padding: 12, background: "rgba(8,18,72,0.96)", borderLeft: "3px solid #8df6ff" }}>
+                  <div key={index} style={{ padding: 12, background: rowBg(index), borderLeft: "3px solid #8df6ff" }}>
                     <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1rem,4.6vw,1.3rem)", lineHeight: 1.1, color: "#8df6ff" }}>{section.heading}</div>
                     {section.date && <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.7rem,3vw,0.82rem)", letterSpacing: 1, color: "rgba(133,244,255,0.62)", marginTop: 3 }}>{section.date}</div>}
                     {section.bullets.map((bullet, bulletIndex) => (
@@ -330,10 +348,19 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                         {section.images.map(image => <ProjectShot key={image} src={image} label={section.heading} wide />)}
                       </div>
                     )}
-                    {section.repo && (
-                      <a href={section.repo} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 12, padding: "6px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 2, color: "#08153f", background: "#8df6ff", textDecoration: "none" }}>
-                        {section.repoLabel ?? "VER REPOSITORIO"} →
-                      </a>
+                    {(section.repo || section.certificate) && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                        {section.repo && (
+                          <a href={section.repo} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "6px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 2, color: "#08153f", background: "#8df6ff", textDecoration: "none" }}>
+                            {section.repoLabel ?? "VER REPOSITORIO"} →
+                          </a>
+                        )}
+                        {section.certificate && (
+                          <a href={section.certificate} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "6px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 2, color: "#8df6ff", background: "transparent", border: "2px solid rgba(141,246,255,0.65)", textDecoration: "none" }}>
+                            {section.certificateLabel ?? "VER CERTIFICADO"} →
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -414,7 +441,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
             >
               <div style={{
                 position: "relative", height: 112,
-                background: isActive ? "#ffffff" : "#10185f",
+                background: isActive ? "#ffffff" : cardBg(index),
                 clipPath: "polygon(0 0, 97% 0, 100% 100%, 3% 100%)",
                 boxShadow: isActive ? "10px 8px 0 #d63232" : "0 8px 0 rgba(5,13,59,0.85)",
                 transform: isActive ? "translateX(6px)" : "translateX(0)",
@@ -424,7 +451,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                 {/* BADGE */}
                 <div style={{
                   position: "absolute", top: 10, left: -10, width: 56, height: 70,
-                  background: isActive ? "#000" : "#0b113d",
+                  background: isActive ? "#000" : badgeBg(index),
                   border: `3px solid ${isActive ? "#000" : "#9cf7ff"}`,
                   clipPath: "polygon(14% 0, 100% 0, 84% 100%, 0 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center",
@@ -490,11 +517,11 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
 
             {/* ROWS */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
-              {summary.rows.map(row => (
+              {summary.rows.map((row, rowIndex) => (
                 <div key={row.index} style={{
                   display: "grid", gridTemplateColumns: "50px 1fr auto",
                   alignItems: "center", gap: 14, minHeight: 56, padding: "0 14px",
-                  background: "rgba(8,18,72,0.96)", clipPath: rowClip,
+                  background: rowBg(rowIndex), clipPath: rowClip,
                   boxShadow: "inset 0 0 0 1px rgba(140,239,255,0.12)",
                 }}>
                   <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: 1, color: "#94f4ff" }}>{row.index}</div>
@@ -506,7 +533,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
 
             {/* BOTTOM */}
             {summary.bottom.bullets.length > 0 && (
-              <div style={{ marginTop: 22, padding: 18, background: "rgba(5,13,57,0.97)", clipPath: "polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)" }}>
+              <div style={{ marginTop: 22, padding: 18, background: bottomBg, clipPath: "polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)" }}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, letterSpacing: 2, color: "#91f5ff", marginBottom: 14 }}>{summary.bottom.title}</div>
                 {summary.bottom.bullets.map((b, i) => (
                   <div key={i} style={{ fontFamily: "'Anton', sans-serif", fontSize: 19, lineHeight: 1.2, color: "#edfaff", marginBottom: 8 }}>{b}</div>
@@ -568,7 +595,7 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 18 }}>
               {detail.sections.map((section, si) => (
                 <div key={si} style={{
-                  padding: 16, background: "rgba(8,18,72,0.96)",
+                  padding: 16, background: rowBg(si),
                   clipPath: rowClip,
                   boxShadow: "inset 0 0 0 1px rgba(140,239,255,0.12)",
                 }}>
@@ -595,21 +622,41 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
                       ))}
                     </div>
                   )}
-                  {section.repo && (
-                    <a
-                      href={section.repo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: "inline-flex", alignItems: "center", gap: 8,
-                        marginTop: 12, padding: "5px 12px",
-                        fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
-                        color: "#08153f", background: "#8df6ff", textDecoration: "none",
-                        clipPath: "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-                      }}
-                    >
-                      {section.repoLabel ?? "VER REPOSITORIO"} →
-                    </a>
+                  {(section.repo || section.certificate) && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12 }}>
+                      {section.repo && (
+                        <a
+                          href={section.repo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: 8,
+                            padding: "5px 12px",
+                            fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+                            color: "#08153f", background: "#8df6ff", textDecoration: "none",
+                            clipPath: "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
+                          }}
+                        >
+                          {section.repoLabel ?? "VER REPOSITORIO"} →
+                        </a>
+                      )}
+                      {section.certificate && (
+                        <a
+                          href={section.certificate}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: 8,
+                            padding: "5px 12px",
+                            fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+                            color: "#8df6ff", background: "transparent", textDecoration: "none",
+                            border: "2px solid rgba(141,246,255,0.65)",
+                          }}
+                        >
+                          {section.certificateLabel ?? "VER CERTIFICADO"} →
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
               ))}

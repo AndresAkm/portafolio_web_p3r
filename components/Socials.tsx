@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties, type FocusEvent, type FormEvent } from "react";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import { useIsMobile } from "./useIsMobile";
 
@@ -49,7 +49,7 @@ const ITEMS = [
   },
   {
     id: "email",
-    label: "CORREO",
+    label: "CONTACTAME",
     logo: "email",
     accent: "#e8002d",
     href: "mailto:jaym3gd2431@gmail.com",
@@ -59,6 +59,8 @@ const ITEMS = [
     ],
   },
 ];
+
+const EMAIL_INDEX = ITEMS.findIndex((item) => item.id === "email");
 
 // ── BRAND LOGOS (inline white SVG, recolourable via `color`) ───────────────────
 
@@ -128,6 +130,227 @@ function Logo({ id, color, size = "1.94vw" }: { id: string; color: string; size?
   );
 }
 
+function ContactForm({ accent, onClose, mobile = false }: { accent: string; onClose: () => void; mobile?: boolean }) {
+  const [status, setStatus] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (sending) return;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setSending(true);
+    setStatus("ENVIANDO...");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          correo: String(data.get("correo") ?? "").trim(),
+          asunto: String(data.get("asunto") ?? "").trim(),
+          mensaje: String(data.get("mensaje") ?? "").trim(),
+        }),
+      });
+      const result = await response.json().catch(() => ({ error: "NO SE PUDO ENVIAR" })) as { error?: string };
+
+      if (!response.ok) {
+        setStatus(result.error ?? "NO SE PUDO ENVIAR");
+      } else {
+        setStatus("MENSAJE ENVIADO ✓");
+        form.reset();
+      }
+    } catch {
+      setStatus("NO SE PUDO ENVIAR");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const onFieldFocus = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    event.currentTarget.style.borderColor = accent;
+    event.currentTarget.style.boxShadow = `0 0 ${mobile ? "10px" : "0.8vw"} ${accent}55`;
+  };
+
+  const onFieldBlur = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    event.currentTarget.style.borderColor = "rgba(141,246,255,0.24)";
+    event.currentTarget.style.boxShadow = "none";
+  };
+
+  const field: CSSProperties = {
+    width: "100%",
+    minHeight: mobile ? 44 : "2.7vw",
+    background: "rgba(6,12,38,0.86)",
+    border: "1px solid rgba(141,246,255,0.24)",
+    borderRadius: mobile ? 3 : "0.21vw",
+    color: "#f6fbff",
+    fontFamily: "'Montserrat', sans-serif",
+    fontWeight: 300,
+    fontSize: mobile ? "0.88rem" : "0.88vw",
+    letterSpacing: mobile ? 0.3 : "0.04vw",
+    padding: mobile ? "0 12px" : "0 0.68vw",
+    outline: "none",
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+  };
+
+  const label: CSSProperties = {
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: mobile ? "0.82rem" : "0.95vw",
+    letterSpacing: mobile ? 1.6 : "0.12vw",
+    color: "rgba(205,232,255,0.75)",
+  };
+
+  const outer: CSSProperties = mobile
+    ? { position: "relative", width: "100%", marginTop: 16, zIndex: 20 }
+    : {
+        position: "fixed",
+        right: "3.88vw",
+        top: "16.26vh",
+        width: "34vw",
+        minWidth: "26vw",
+        zIndex: 55,
+        pointerEvents: "all",
+        filter: `drop-shadow(0 0 0.97vw ${accent}aa)`,
+      };
+
+  const panel: CSSProperties = mobile
+    ? {
+        position: "relative",
+        padding: "16px 16px 18px",
+        background: "rgba(10,15,28,0.9)",
+        clipPath: "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
+      }
+    : {
+        position: "relative",
+        padding: "1.25vw 1.5vw 1.4vw",
+        background: "rgba(10,15,28,0.9)",
+        clipPath: "polygon(1.39vw 0, 100% 0, calc(100% - 1.11vw) 100%, 0 100%)",
+        boxShadow: "0 0.42vw 1.52vw rgba(0,0,0,0.65)",
+      };
+
+  return (
+    <div data-contact-form="" className="sc-infobar-in" style={outer}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: accent,
+          clipPath: mobile
+            ? "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)"
+            : "polygon(1.39vw 0, 100% 0, calc(100% - 1.11vw) 100%, 0 100%)",
+          transform: mobile ? "translate(3px, 4px)" : "translate(0.55vw, 0.49vw)",
+          opacity: 0.7,
+          pointerEvents: "none",
+        }}
+      />
+      <div style={panel}>
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: mobile ? 4 : "0.35vw", background: accent, transform: "skewX(-20deg)", transformOrigin: "top", opacity: 0.9 }} />
+
+        <div style={{ display: "flex", alignItems: "center", gap: mobile ? 10 : "0.9vw", marginBottom: mobile ? 14 : "1vw" }}>
+          <div
+            style={{
+              width: mobile ? 34 : "2.36vw",
+              height: mobile ? 34 : "2.36vw",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: accent,
+              clipPath: "polygon(14% 0, 100% 0, 86% 100%, 0 100%)",
+            }}
+          >
+            <Logo id="email" color="#fff" size={mobile ? "19px" : "1.39vw"} />
+          </div>
+          <span
+            style={{
+              flex: 1,
+              fontFamily: "'Anton', sans-serif",
+              fontSize: mobile ? "1.25rem" : "1.59vw",
+              letterSpacing: mobile ? 1.2 : "0.14vw",
+              transform: "skewX(-9deg)",
+              color: "#f6fbff",
+              textShadow: `0 0 ${mobile ? "12px" : "0.69vw"} ${accent}66`,
+              userSelect: "none",
+            }}
+          >
+            REDACTAR CORREO
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              flexShrink: 0,
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: mobile ? "0.78rem" : "0.95vw",
+              letterSpacing: mobile ? 1.3 : "0.1vw",
+              color: "rgba(255,255,255,0.72)",
+              background: "transparent",
+              border: "1px solid rgba(141,246,255,0.28)",
+              borderRadius: 3,
+              padding: mobile ? "5px 8px" : "0.24vw 0.5vw",
+              cursor: "pointer",
+            }}
+          >
+            CERRAR ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: mobile ? 10 : "0.62vw" }}>
+          <label htmlFor="contact-correo" style={label}>TU CORREO</label>
+          <input id="contact-correo" name="correo" type="email" required autoComplete="email" placeholder="tu@correo.com" style={field} onFocus={onFieldFocus} onBlur={onFieldBlur} />
+
+          <label htmlFor="contact-asunto" style={label}>ASUNTO</label>
+          <input id="contact-asunto" name="asunto" type="text" placeholder="ASUNTO DEL MENSAJE" style={field} onFocus={onFieldFocus} onBlur={onFieldBlur} />
+
+          <label htmlFor="contact-mensaje" style={label}>MENSAJE</label>
+          <textarea
+            id="contact-mensaje"
+            name="mensaje"
+            required
+            rows={4}
+            placeholder="ESCRIBE TU MENSAJE..."
+            style={{ ...field, minHeight: mobile ? 108 : "7vw", paddingTop: mobile ? 11 : "0.55vw", paddingBottom: mobile ? 11 : "0.55vw", resize: "vertical" }}
+            onFocus={onFieldFocus}
+            onBlur={onFieldBlur}
+          />
+
+          <button
+            type="submit"
+            disabled={sending}
+            style={{
+              width: "100%",
+              minHeight: mobile ? 46 : "2.8vw",
+              marginTop: mobile ? 2 : "0.2vw",
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: mobile ? "1rem" : "1.25vw",
+              letterSpacing: mobile ? 2 : "0.14vw",
+              color: "#fff",
+              background: "#c4001a",
+              border: "none",
+              cursor: sending ? "wait" : "pointer",
+              opacity: sending ? 0.7 : 1,
+              clipPath: mobile
+                ? "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)"
+                : "polygon(0.9vw 0, 100% 0, calc(100% - 0.7vw) 100%, 0 100%)",
+              boxShadow: `0 ${mobile ? 3 : "0.21vw"} 0 rgba(0,0,0,0.45)`,
+            }}
+          >
+            {sending ? "ENVIANDO..." : "ENVIAR A JAYM3GD2431 →"}
+          </button>
+
+          {status && (
+            <span aria-live="polite" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: mobile ? "0.76rem" : "0.9vw", letterSpacing: mobile ? 1.3 : "0.1vw", color: status === "MENSAJE ENVIADO ✓" ? "#4dff9b" : "#ff5e88", textShadow: status === "MENSAJE ENVIADO ✓" ? `0 0 ${mobile ? "10px" : "0.69vw"} rgba(77,255,155,0.5)` : "none" }}>
+              {status}
+            </span>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── COMPONENT ─────────────────────────────────────────────────────────────────
 
 export default function Socials({ onBack }: { onBack?: () => void }) {
@@ -138,6 +361,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
   const [mounted, setMounted]         = useState(false);
   const [activeLink, setActiveLink]   = useState(0);
   const [focus, setFocus]             = useState<"left" | "right">("left");
+  const [contactOpen, setContactOpen] = useState(false);
 
   // mailto: must navigate the current document — window.open(_blank) just opens a dead tab
   const openLink = (url: string) => {
@@ -157,6 +381,16 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
 
     const onKey = (e: KeyboardEvent) => {
 
+      if (contactOpen) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          setContactOpen(false);
+          setFocus("left");
+        }
+        return;
+      }
+
       if (focus === "left") {
 
         if (e.key === "ArrowUp")   setActive(i => Math.max(0, i - 1));
@@ -168,7 +402,13 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         }
 
         if (e.key === "Enter") {
-          openLink(ITEMS[active].href);
+          if (active === EMAIL_INDEX) {
+            setContactOpen(true);
+            setFocus("right");
+            setActiveLink(0);
+          } else {
+            openLink(ITEMS[active].href);
+          }
         }
 
       } else {
@@ -179,17 +419,21 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         if (e.key === "ArrowLeft") setFocus("left");
 
         if (e.key === "Enter") {
-          openLink(ITEMS[active].links[activeLink].url);
+          if (active === EMAIL_INDEX) {
+            setContactOpen(true);
+          } else {
+            openLink(ITEMS[active].links[activeLink].url);
+          }
         }
 
       }
 
     };
 
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
 
-  }, [active, focus, activeLink]);
+  }, [active, focus, activeLink, contactOpen]);
 
   const item = ITEMS[active];
 
@@ -203,11 +447,31 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))" }}>
           <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 4 }}>ENLACES</div>
           <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.75rem,3.3vw,0.9rem)", letterSpacing: 2, color: "rgba(205,232,255,0.65)", marginBottom: 16 }}>PERFIL PROFESIONAL Y CONTACTO</div>
+          {active === EMAIL_INDEX && contactOpen && (
+            <ContactForm
+              accent={ITEMS[EMAIL_INDEX].accent}
+              mobile
+              onClose={() => { setContactOpen(false); setFocus("left"); }}
+            />
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {ITEMS.map((linkItem, index) => (
               <button
                 key={linkItem.id}
-                onClick={() => { setActive(index); openLink(linkItem.href); }}
+                onClick={() => {
+                  setActive(index);
+                  if (index === EMAIL_INDEX) {
+                    setContactOpen(true);
+                    setFocus("right");
+                    setActiveLink(0);
+                    requestAnimationFrame(() => {
+                      document.querySelector<HTMLElement>("[data-mobile-scroll]")?.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+                    });
+                  } else {
+                    setContactOpen(false);
+                    openLink(linkItem.href);
+                  }
+                }}
                 style={{ position: "relative", width: "100%", minHeight: 76, padding: 0, textAlign: "left", cursor: "pointer", background: "transparent", border: "none" }}
               >
                 <div style={{ position: "absolute", inset: "6px -4px -6px 6px", background: linkItem.accent, clipPath: "polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%)", opacity: active === index ? 1 : 0.55 }} />
@@ -326,10 +590,24 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
             <div
               key={it.id}
               onClick={() => {
-                if (isActive) openLink(it.href);
-                else { setActive(i); setFocus("left"); }
+                if (isActive) {
+                  if (i === EMAIL_INDEX) {
+                    setContactOpen(true);
+                    setFocus("right");
+                    setActiveLink(0);
+                  } else {
+                    openLink(it.href);
+                  }
+                } else {
+                  setActive(i);
+                  setFocus("left");
+                  setContactOpen(false);
+                }
               }}
-              onMouseEnter={() => setActive(i)}
+              onMouseEnter={() => {
+                setActive(i);
+                if (i !== EMAIL_INDEX) setContactOpen(false);
+              }}
               style={{
                 position: "relative",
                 flexShrink: 0,
@@ -556,7 +834,9 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
       )}
 
       {/* ── RIGHT: ACTION BANNER — leaning, layered Persona shard ── */}
-      {mounted && item.links.map((link, i) => {
+      {mounted && active === EMAIL_INDEX && contactOpen ? (
+        <ContactForm accent={item.accent} onClose={() => { setContactOpen(false); setFocus("left"); }} />
+      ) : mounted && item.links.map((link, i) => {
         const live = focus === "right" && activeLink === i;
         return (
           <div
@@ -565,7 +845,8 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
             onClick={() => {
               setFocus("right");
               setActiveLink(i);
-              openLink(link.url);
+              if (active === EMAIL_INDEX) setContactOpen(true);
+              else openLink(link.url);
             }}
             onMouseEnter={() => { setFocus("right"); setActiveLink(i); }}
             onMouseLeave={() => setFocus("left")}
