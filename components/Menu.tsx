@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
-import About from "./About";
-import Resume from "./Resume";
-import Github from "./Github";
-import Socials from "./Socials";
-import SideProjects from "./Sideprojects";
-import Transition from "./Transition";
+
+const About = dynamic(() => import("./About"), { ssr: false, loading: () => null });
+const Resume = dynamic(() => import("./Resume"), { ssr: false, loading: () => null });
+const Github = dynamic(() => import("./Github"), { ssr: false, loading: () => null });
+const Socials = dynamic(() => import("./Socials"), { ssr: false, loading: () => null });
+const SideProjects = dynamic(() => import("./Sideprojects"), { ssr: false, loading: () => null });
+const Transition = dynamic(() => import("./Transition"), { ssr: false, loading: () => null });
 import { useIsMobile } from "./useIsMobile";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
@@ -50,9 +52,9 @@ const VARIANT_MAP: Record<string, Variant> = {
 };
 
 const SCREEN_MEDIA: Record<string, string[]> = {
-  about:    ["/images/about-makoto.png", "/images/p5-logo.png"],
+  about:    ["/images/about-makoto.webp", "/images/p5-logo.webp"],
   resume:   ["/videos/skills.mp4"],
-  github:   ["/videos/equip.mp4", "/images/char1.png"],
+  github:   ["/videos/equip.mp4", "/images/char1.webp"],
   socials:  [
     "/videos/status.enhanced.mp4",
     "/images/shards/cyan.png",

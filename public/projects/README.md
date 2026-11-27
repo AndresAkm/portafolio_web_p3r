@@ -2,9 +2,9 @@
 
 Coloca aquí los archivos de imagen que usa el portafolio:
 
-- `carely-1.png`
-- `carely-2.png`
-- `anime-cli-1.png`
+- `carely-1.webp`
+- `carely-2.webp`
+- `anime-cli-1.webp`
 
 La portada para redes sociales va en `public/og-cover.png`, fuera de esta carpeta.
 

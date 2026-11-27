@@ -12,11 +12,11 @@ Este archivo resume los recursos visuales usados por la interfaz y su procedenci
 |---|---|
 | `public/favicon.svg` | Icono del sitio, letra `A` roja y blanca sobre azul marino |
 | `public/og-cover.png` | Portada social 1200x630 |
-| `public/images/about-makoto.png` | Retrato usado en el diálogo de `About.tsx` |
-| `public/p5-logo.png` | Distintivo del diálogo de Makoto |
-| `public/projects/carely-1.png` | Captura de Carely |
-| `public/projects/carely-2.png` | Captura de Carely |
-| `public/projects/anime-cli-1.png` | Captura de Anime CLI |
+| `public/images/about-makoto.webp` | Retrato usado en el diálogo de `About.tsx` |
+| `public/images/p5-logo.webp` | Distintivo del diálogo de Makoto |
+| `public/projects/carely-1.webp` | Captura de Carely |
+| `public/projects/carely-2.webp` | Captura de Carely |
+| `public/projects/anime-cli-1.webp` | Captura de Anime CLI |
 | `public/projects/README.md` | Listado de capturas esperadas |
 
 Si una captura de proyecto no existe, `Resume.tsx` muestra un marcador de posición limpio con el nombre del proyecto.
@@ -30,11 +30,10 @@ Si una captura de proyecto no existe, `Resume.tsx` muestra un marcador de posici
 | `public/videos/skills.mp4` | Fondo de currículum y proyectos secundarios |
 | `public/videos/status.enhanced.mp4` | Fondo de enlaces |
 | `public/videos/equip.mp4` | Fondo de GitHub |
-| `public/images/char1.png` | Recorte de personaje en GitHub |
+| `public/images/char1.webp` | Recorte de personaje en GitHub |
 | `public/images/icon1.png` | Icono de la barra de GitHub |
 | `public/images/shards/*.png` | Fragmentos de color de los enlaces |
-| `public/fonts/persona.ttf` | Tipografía del cartel de carga |
-| `public/fonts/FOT-Skip Std B.otf` | Tipografía P3R reservada |
+| `public/fonts/persona.woff2` | Tipografía del cartel de carga |
 | `public/sfx/*.wav` | Sonidos de navegación y confirmación |
 
 ## Sustitución

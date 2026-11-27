@@ -6,7 +6,7 @@ import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
-const CHAR = "/images/char1.png";
+const CHAR = "/images/char1.webp";
 
 const ITEM = {
   id: "github",
