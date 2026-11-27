@@ -158,7 +158,9 @@ function VideoBackdrop({ warmed, active, ready, onReady }: {
               muted
               playsInline
               preload={warmed.has(item.key) ? "auto" : "metadata"}
-              onPlaying={() => onReady(item.key)}
+              onTimeUpdate={(e) => {
+                if (e.currentTarget.currentTime >= 0.2) onReady(item.key);
+              }}
               aria-hidden="true"
               data-mobile-bg={isMobile ? "" : undefined}
               className="absolute inset-0 w-full h-full object-cover"
@@ -250,6 +252,7 @@ export default function Menu() {
       setActive(0);
     }
     setCurrentScreen(screen);
+    window.setTimeout(() => setIsTransitioning(false), screen === "menu" ? 2120 : 430);
   }, []);
 
   const markVideoReady = useCallback((key: string) => {
@@ -365,15 +368,11 @@ export default function Menu() {
       window.setTimeout(() => {
         if (pendingScreenRef.current !== screen) return;
         finishSwap(screen);
-      }, 560);
+      }, 1400);
     } else {
       const swapDelay = screen === "menu" ? 580 : 220;
       window.setTimeout(() => finishSwap(screen), swapDelay);
     }
-
-    const panelHoldExtra = screen === "menu" ? 1500 : 0;
-    const unmountDelay = screen === "menu" ? 1200 + panelHoldExtra : 650;
-    setTimeout(() => setIsTransitioning(false), unmountDelay);
   };
 
   const backToMenu = () => {
