@@ -101,30 +101,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden" id="github-screen">
 
-      {/* ENTRY MASK */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 9,
-          overflow: "hidden",
-          background: "#0a1230",
-          backgroundImage: "url('/posters/equip.webp')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          clipPath: "circle(0 at 50% 50%)",
-          animation: "github-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
-          pointerEvents: "none",
-        }}
-      >
-      </div>
-
       <style>{`
-        @keyframes github-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
-          85%  { opacity: 1; }
-          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
-        }
         @keyframes sc-arrow-left {
           0%, 100% { transform: translateX(0); opacity: 1; }
           50%       { transform: translateX(-5px); opacity: 0.4; }

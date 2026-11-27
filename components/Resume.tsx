@@ -385,27 +385,6 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden" id="resume-screen">
 
-      {/* ENTRY MASK */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 9, overflow: "hidden",
-        background: "#0a1230",
-        backgroundImage: "url('/posters/skills.webp')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        clipPath: "circle(0 at 50% 50%)",
-        animation: "resume-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
-        pointerEvents: "none",
-      }}>
-      </div>
-
-      <style>{`
-        @keyframes resume-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
-          85%  { opacity: 1; }
-          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
-        }
-      `}</style>
-
       {/* ── CARD LIST ── */}
       <div style={{
         position: "absolute", top: "9vh", left: "2.8vw",

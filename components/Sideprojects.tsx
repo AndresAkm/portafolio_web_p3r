@@ -42,31 +42,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
       {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-black/50" />
 
-      {/* ENTRY MASK */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 9,
-          overflow: "hidden",
-          background: "#0a1230",
-          backgroundImage: "url('/posters/skills.webp')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          clipPath: "circle(0 at 50% 50%)",
-          animation: "sp-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
-          pointerEvents: "none",
-        }}
-      >
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
-      </div>
-
       <style>{`
-        @keyframes sp-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
-          85%  { opacity: 1; }
-          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
-        }
         @keyframes sp-blink {
           0%, 100% { opacity: 1; }
           50%       { opacity: 0; }
