@@ -30,6 +30,7 @@ Si una captura de proyecto no existe, `Resume.tsx` muestra un marcador de posici
 | `public/videos/skills.mp4` | Fondo de currículum y proyectos secundarios |
 | `public/videos/status.enhanced.mp4` | Fondo de enlaces |
 | `public/videos/equip.mp4` | Fondo de GitHub |
+| `public/posters/*.webp` | Primer frame de cada vídeo; se usa en transiciones y mientras el vídeo se decodifica |
 | `public/images/char1.webp` | Recorte de personaje en GitHub |
 | `public/images/icon1.png` | Icono de la barra de GitHub |
 | `public/images/shards/*.png` | Fragmentos de color de los enlaces |

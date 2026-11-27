@@ -1,17 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import dynamic from "next/dynamic";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
-
-const About = dynamic(() => import("./About"), { ssr: false, loading: () => null });
-const Resume = dynamic(() => import("./Resume"), { ssr: false, loading: () => null });
-const Github = dynamic(() => import("./Github"), { ssr: false, loading: () => null });
-const Socials = dynamic(() => import("./Socials"), { ssr: false, loading: () => null });
-const SideProjects = dynamic(() => import("./Sideprojects"), { ssr: false, loading: () => null });
-const Transition = dynamic(() => import("./Transition"), { ssr: false, loading: () => null });
 import { useIsMobile } from "./useIsMobile";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+
+const loadAbout = () => import("./About");
+const loadResume = () => import("./Resume");
+const loadGithub = () => import("./Github");
+const loadSocials = () => import("./Socials");
+const loadSideProjects = () => import("./Sideprojects");
+const loadTransition = () => import("./Transition");
+
+const About = lazy(loadAbout);
+const Resume = lazy(loadResume);
+const Github = lazy(loadGithub);
+const Socials = lazy(loadSocials);
+const SideProjects = lazy(loadSideProjects);
+const Transition = lazy(loadTransition);
 
 const TRACKS = [
   "/audio/reloadost-1.mp3",
@@ -51,36 +57,81 @@ const VARIANT_MAP: Record<string, Variant> = {
   sideproj: "default",
 };
 
-const SCREEN_MEDIA: Record<string, string[]> = {
-  about:    ["/images/about-makoto.webp", "/images/p5-logo.webp"],
-  resume:   ["/videos/skills.mp4"],
-  github:   ["/videos/equip.mp4", "/images/char1.webp"],
-  socials:  [
-    "/videos/status.enhanced.mp4",
-    "/images/shards/cyan.png",
-    "/images/shards/yellow.png",
-    "/images/shards/pink.png",
-    "/images/shards/red.png",
-  ],
-  sideproj: ["/videos/skills.mp4"],
+const SCREEN_VIDEO: Record<string, string | null> = {
+  menu:     null,
+  about:    null,
+  resume:   "skills",
+  sideproj: "skills",
+  github:   "equip",
+  socials:  "status",
 };
 
-const prefetchedMedia = new Set<string>();
+const SCREEN_POSTER: Record<string, string> = {
+  menu:     "/posters/menu.webp",
+  about:    "/images/about-makoto.webp",
+  resume:   "/posters/skills.webp",
+  sideproj: "/posters/skills.webp",
+  github:   "/posters/equip.webp",
+  socials:  "/posters/status.enhanced.webp",
+};
 
-function prefetchScreen(screen: string, priority: "low" | "high" = "high") {
-  const urls = SCREEN_MEDIA[screen];
-  if (!urls || typeof document === "undefined") return;
-  for (const url of urls) {
-    if (prefetchedMedia.has(url)) continue;
-    prefetchedMedia.add(url);
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = url.endsWith(".mp4") ? "video" : "image";
-    link.href = url;
-    if (url.endsWith(".mp4")) link.type = "video/mp4";
-    if (priority === "low") link.setAttribute("fetchpriority", "low");
-    document.head.appendChild(link);
-  }
+const SCREEN_LOADERS: Record<string, () => Promise<unknown>> = {
+  about:      loadAbout,
+  resume:     loadResume,
+  github:     loadGithub,
+  socials:    loadSocials,
+  sideproj:   loadSideProjects,
+  transition: loadTransition,
+};
+
+const BACKDROP_VIDEOS = [
+  { key: "skills", src: "/videos/skills.mp4", poster: "/posters/skills.webp" },
+  { key: "equip", src: "/videos/equip.mp4", poster: "/posters/equip.webp" },
+  { key: "status", src: "/videos/status.enhanced.mp4", poster: "/posters/status.enhanced.webp" },
+] as const;
+
+function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string | null }) {
+  const isMobile = useIsMobile();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const refs = useRef<Record<string, HTMLVideoElement | null>>({});
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    for (const item of BACKDROP_VIDEOS) {
+      if (!warmed.has(item.key)) continue;
+      const video = refs.current[item.key];
+      if (!video) continue;
+      video.preload = "auto";
+      void video.play().catch(() => {});
+    }
+  }, [warmed, prefersReducedMotion]);
+
+  return (
+    <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none", background: "#050b1f" }}>
+      {BACKDROP_VIDEOS.map((item) => {
+        const isActive = active === item.key;
+        const shouldPlay = warmed.has(item.key) && !prefersReducedMotion;
+        return (
+          <video
+            key={item.key}
+            ref={(el) => { refs.current[item.key] = el; }}
+            autoPlay={shouldPlay}
+            loop={!prefersReducedMotion}
+            muted
+            playsInline
+            preload={warmed.has(item.key) ? "auto" : "metadata"}
+            poster={item.poster}
+            aria-hidden="true"
+            data-mobile-bg={isMobile ? "" : undefined}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: 0, opacity: isActive ? 1 : 0, transition: "opacity 180ms ease" }}
+          >
+            <source src={item.src} type="video/mp4" />
+          </video>
+        );
+      })}
+    </div>
+  );
 }
 
 const triClip = (w: number, h: number) =>
@@ -111,6 +162,10 @@ export default function Menu() {
   // Use a ref for variant so it's always current when Transition mounts
   const variantRef = useRef<Variant>("panel");
   const [transitionVariant, setTransitionVariant] = useState<Variant>("panel");
+  const [transitionPoster, setTransitionPoster] = useState(SCREEN_POSTER.menu);
+
+  const [warmedVideos, setWarmedVideos] = useState<Set<string>>(() => new Set());
+  const warmedVideosRef = useRef<Set<string>>(new Set());
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -130,6 +185,22 @@ export default function Menu() {
       audio.play().catch(() => {});
     }
   }, []);
+
+  const warmChunk = useCallback((screen: string) => {
+    void SCREEN_LOADERS[screen]?.();
+  }, []);
+
+  const warmVideo = useCallback((key: string | null) => {
+    if (!key || warmedVideosRef.current.has(key)) return;
+    warmedVideosRef.current.add(key);
+    setWarmedVideos(new Set(warmedVideosRef.current));
+  }, []);
+
+  const warmScreen = useCallback((screen: string) => {
+    warmChunk(screen);
+    warmChunk("transition");
+    warmVideo(SCREEN_VIDEO[screen] ?? null);
+  }, [warmChunk, warmVideo]);
 
   useEffect(() => {
     if (!started) return;
@@ -179,12 +250,14 @@ export default function Menu() {
   useEffect(() => {
     if (!showMenu || currentScreen !== "menu" || isMobile) return;
     const timer = setTimeout(() => {
-      prefetchScreen("about", "low");
-      prefetchScreen("resume", "low");
-      prefetchScreen("github", "low");
+      warmChunk("about");
+      warmChunk("resume");
+      warmChunk("github");
+      warmChunk("socials");
+      warmChunk("transition");
     }, 2500);
     return () => clearTimeout(timer);
-  }, [showMenu, currentScreen, isMobile]);
+  }, [showMenu, currentScreen, isMobile, warmChunk]);
 
   /* ---------------- SFX ---------------- */
 
@@ -205,13 +278,14 @@ export default function Menu() {
   const transitionTo = (screen: string, skipSelectSfx = false) => {
     if (isTransitioning) return;
 
-    prefetchScreen(screen);
+    warmScreen(screen);
     if (!skipSelectSfx) playSelectSfx();
 
     // Set the variant on the ref AND state synchronously before mounting
     const variant = VARIANT_MAP[screen] ?? "default";
     variantRef.current = variant;
     setTransitionVariant(variant);
+    setTransitionPoster(SCREEN_POSTER[screen] ?? SCREEN_POSTER.menu);
 
     // Small rAF delay ensures the state has flushed before Transition mounts
     requestAnimationFrame(() => {
@@ -260,13 +334,13 @@ export default function Menu() {
         if (e.key === "ArrowDown") {
           const next = Math.min(menuItems.length - 1, active + 1);
           playNavigationSfx();
-          prefetchScreen(menuItems[next].screen);
+          warmScreen(menuItems[next].screen);
           activate(next);
         }
         if (e.key === "ArrowUp") {
           const next = Math.max(0, active - 1);
           playNavigationSfx();
-          prefetchScreen(menuItems[next].screen);
+          warmScreen(menuItems[next].screen);
           activate(next);
         }
         if (e.key === "Enter") {
@@ -341,6 +415,7 @@ export default function Menu() {
 
       {started && (
         <>
+          <VideoBackdrop warmed={warmedVideos} active={SCREEN_VIDEO[currentScreen] ?? null} />
 
           {/* WHITE BACKDROP — fills the space opened up on the left */}
           {currentScreen === "menu" && (
@@ -351,7 +426,8 @@ export default function Menu() {
           {currentScreen === "menu" && vidsReady && (
             <video
               autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : "metadata"}
+              preload={prefersReducedMotion ? "none" : "auto"}
+              poster="/posters/menu.webp"
               src={menuSources.loop}
               data-mobile-bg={isMobile ? "" : undefined}
               className="absolute inset-0 w-full h-full object-cover"
@@ -363,7 +439,8 @@ export default function Menu() {
           {currentScreen === "menu" && vidsReady && (
             <video
               autoPlay={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : "metadata"}
+              preload={prefersReducedMotion ? "none" : "auto"}
+              poster="/posters/menu-intro.webp"
               src={menuSources.intro}
               data-mobile-bg={isMobile ? "" : undefined}
               onCanPlayThrough={() => setMenuVidReady(true)}
@@ -546,8 +623,8 @@ export default function Menu() {
                       <div
                         key={item.label}
                         onClick={() => { activate(i); transitionTo(item.screen); }}
-                        onMouseEnter={() => { activate(i); playNavigationSfx(); prefetchScreen(item.screen); }}
-                        onTouchStart={() => prefetchScreen(item.screen)}
+                        onMouseEnter={() => { activate(i); playNavigationSfx(); warmScreen(item.screen); }}
+                        onTouchStart={() => warmScreen(item.screen)}
                         style={{
                           position: "relative",
                           marginBottom: i === 0 ? "14px" : 0,
@@ -664,18 +741,23 @@ export default function Menu() {
           )}
 
           {/* SCREENS */}
-          {currentScreen === "about"   && <About onBack={backToMenu} />}
-          {currentScreen === "resume"  && <Resume onBack={backToMenu} />}
-          {currentScreen === "github"  && <Github onBack={backToMenu} />}
-          {currentScreen === "socials"   && <Socials onBack={backToMenu} />}
-          {currentScreen === "sideproj"  && <SideProjects onBack={backToMenu} />}
+          <Suspense fallback={null}>
+            {currentScreen === "about"   && <About onBack={backToMenu} />}
+            {currentScreen === "resume"  && <Resume onBack={backToMenu} />}
+            {currentScreen === "github"  && <Github onBack={backToMenu} />}
+            {currentScreen === "socials"   && <Socials onBack={backToMenu} />}
+            {currentScreen === "sideproj"  && <SideProjects onBack={backToMenu} />}
+          </Suspense>
 
           {/* TRANSITION — key forces remount when variant changes */}
           {isTransitioning && (
-            <Transition
-              key={transitionVariant}
-              variant={transitionVariant}
-            />
+            <Suspense fallback={null}>
+              <Transition
+                key={`${transitionVariant}-${transitionPoster}`}
+                variant={transitionVariant}
+                poster={transitionPoster}
+              />
+            </Suspense>
           )}
 
         </>

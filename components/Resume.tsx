@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
@@ -258,7 +257,6 @@ function ProjectShot({ src, label, wide = false }: { src: string; label: string;
 
 export default function Resume({ onBack }: { onBack?: () => void }) {
 
-  const prefersReducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const [active, setActive]     = useState(0);
   const [mounted, setMounted]   = useState(false);
@@ -289,9 +287,6 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
   if (isMobile) {
     return (
       <div className="absolute inset-0 overflow-hidden" id="resume-screen">
-        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
-          <source src="/videos/skills.mp4" type="video/mp4" />
-        </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.55) 0%, rgba(4,9,26,0.82) 100%)" }} />
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "18px 16px calc(104px + var(--safe-bottom))" }}>
           <div style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(2.2rem,9vw,3rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 12 }}>LISTA</div>
@@ -390,15 +385,13 @@ export default function Resume({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden" id="resume-screen">
 
-      {/* BG VIDEO */}
-      <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} className="absolute inset-0 w-full h-full object-cover">
-        <source src="/videos/skills.mp4" type="video/mp4" />
-      </video>
-
       {/* ENTRY MASK */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 9, overflow: "hidden",
-        background: "#0047FF",
+        background: "#0a1230",
+        backgroundImage: "url('/posters/skills.webp')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         clipPath: "circle(0 at 50% 50%)",
         animation: "resume-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
         pointerEvents: "none",

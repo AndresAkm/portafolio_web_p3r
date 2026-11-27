@@ -1,19 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
+
+const posterStyle = (poster?: string): CSSProperties | undefined =>
+  poster
+    ? {
+        backgroundImage: `url(${poster})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    : undefined;
 
 // ── ABOUT / MENU — your original panel slide in/out ──────────────────────────
 
 const PANEL_COLORS = [
-  "#0033ff",
-  "#0020ee",
-  "#0010cc",
-  "#0028ff",
-  "#001add",
+  "#0a1230",
+  "#0d1a3a",
+  "#111c3f",
+  "#08122c",
+  "#050b1f",
 ];
 
-function PanelTransition() {
+function PanelTransition({ poster }: { poster?: string }) {
   const [phase, setPhase] = useState<"in" | "out">("in");
 
   useEffect(() => {
@@ -35,7 +44,7 @@ function PanelTransition() {
             delay: i * 0.045,
             ease: phase === "in" ? [0.22, 1, 0.36, 1] : [0.64, 0, 0.78, 0],
           }}
-          style={{ backgroundColor: color, flex: "1 0 20%", height: "100%" }}
+          style={{ backgroundColor: color, ...posterStyle(poster), flex: "1 0 20%", height: "100%" }}
         />
       ))}
     </div>
@@ -44,7 +53,7 @@ function PanelTransition() {
 
 // ── RESUME — parallelogram cards slide in from left ───────────────────────────
 
-function ResumeTransition() {
+function ResumeTransition({ poster }: { poster?: string }) {
   const cards = [
     { top: "14vh", color: "#0f1760", delay: 0 },
     { top: "31vh", color: "#7ff6ff", delay: 0.05 },
@@ -64,6 +73,7 @@ function ResumeTransition() {
             width: "78vw",
             height: "14vh",
             background: card.color,
+            ...posterStyle(poster),
             zIndex: 10 - i,
             clipPath: "polygon(0 0, 97% 0, 100% 100%, 3% 100%)",
             boxShadow: card.color === "#ffffff" ? "10px 0 0 #d63232" : "none",
@@ -84,7 +94,7 @@ function ResumeTransition() {
 
 // ── SOCIALS / GITHUB — skewed vertical stripes from right ─────────────────────
 
-function StripesTransition() {
+function StripesTransition({ poster }: { poster?: string }) {
   const stripes = [
     { color: "#00184c", left: "72vw", width: "24vw", delay: 0 },
     { color: "#00dff7", left: "80vw", width: "14vw", delay: 0.06 },
@@ -103,6 +113,7 @@ function StripesTransition() {
             width: stripe.width,
             height: "112vh",
             background: stripe.color,
+            ...posterStyle(poster),
             zIndex: 10 - i,
             transform: "skewX(-16deg)",
             transformOrigin: "top",
@@ -123,8 +134,8 @@ function StripesTransition() {
 
 // ── DEFAULT — 3 colored blocks scaleX ────────────────────────────────────────
 
-function DefaultTransition() {
-  const blocks = ["#0d1a3a", "#1a6aff", "#7dd4fc"];
+function DefaultTransition({ poster }: { poster?: string }) {
+  const blocks = ["#0a1230", "#0d1a3a", "#111c3f"];
 
   return (
     <>
@@ -135,6 +146,7 @@ function DefaultTransition() {
             position: "absolute",
             inset: 0,
             background: color,
+            ...posterStyle(poster),
             zIndex: 10 - i,
             originX: 0,
           }}
@@ -156,15 +168,16 @@ function DefaultTransition() {
 
 interface TransitionProps {
   variant?: "panel" | "resume" | "stripes" | "default";
+  poster?: string;
 }
 
-export default function Transition({ variant = "panel" }: TransitionProps) {
+export default function Transition({ variant = "panel", poster }: TransitionProps) {
   return (
     <div className="absolute inset-0 z-[999] pointer-events-none overflow-hidden">
-      {variant === "panel"   && <PanelTransition />}
-      {variant === "resume"  && <ResumeTransition />}
-      {variant === "stripes" && <StripesTransition />}
-      {variant === "default" && <DefaultTransition />}
+      {variant === "panel"   && <PanelTransition poster={poster} />}
+      {variant === "resume"  && <ResumeTransition poster={poster} />}
+      {variant === "stripes" && <StripesTransition poster={poster} />}
+      {variant === "default" && <DefaultTransition poster={poster} />}
     </div>
   );
 }

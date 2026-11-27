@@ -440,9 +440,6 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
   if (isMobile) {
     return (
       <div className="absolute inset-0 overflow-hidden" id="socials-screen">
-        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
-          <source src="/videos/status.enhanced.mp4" type="video/mp4" />
-        </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))" }}>
           <div style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 4 }}>ENLACES</div>
@@ -504,15 +501,6 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden" id="socials-screen">
 
-      {/* BG VIDEO */}
-      <video
-        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-        preload={prefersReducedMotion ? "none" : "metadata"}
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/videos/status.enhanced.mp4" type="video/mp4" />
-      </video>
-
       {/* ENTRY MASK */}
       <div
         style={{
@@ -520,7 +508,10 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
           inset: 0,
           zIndex: 9,
           overflow: "hidden",
-          background: "#0047FF",
+          background: "#0a1230",
+          backgroundImage: "url('/posters/status.enhanced.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           clipPath: "circle(0 at 50% 50%)",
           animation: "socials-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
           pointerEvents: "none",

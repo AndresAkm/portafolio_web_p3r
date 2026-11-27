@@ -19,9 +19,6 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
   if (isMobile) {
     return (
       <div className="absolute inset-0 overflow-hidden">
-        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
-          <source src="/videos/skills.mp4" type="video/mp4" />
-        </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "rgba(0,0,0,0.5)" }} />
         <div style={{ position: "absolute", top: "38%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
         <div style={{ position: "absolute", top: "62%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
@@ -42,15 +39,6 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
 
-      {/* BG VIDEO */}
-      <video
-        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-        preload={prefersReducedMotion ? "none" : "metadata"}
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/videos/skills.mp4" type="video/mp4" />
-      </video>
-
       {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-black/50" />
 
@@ -61,7 +49,10 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
           inset: 0,
           zIndex: 9,
           overflow: "hidden",
-          background: "#0047FF",
+          background: "#0a1230",
+          backgroundImage: "url('/posters/skills.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           clipPath: "circle(0 at 50% 50%)",
           animation: "sp-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
           pointerEvents: "none",

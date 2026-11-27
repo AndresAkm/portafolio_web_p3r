@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import { useIsMobile } from "./useIsMobile";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
@@ -29,7 +28,6 @@ const ITEM = {
 
 export default function Github({ onBack }: { onBack?: () => void }) {
 
-  const prefersReducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const [mounted, setMounted]       = useState(false);
   const [focused, setFocused]       = useState(false); // right panel focused
@@ -64,9 +62,6 @@ export default function Github({ onBack }: { onBack?: () => void }) {
   if (isMobile) {
     return (
       <div className="absolute inset-0 overflow-hidden" id="github-screen">
-        <video autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline preload={prefersReducedMotion ? "none" : "metadata"} data-mobile-bg="" className="absolute inset-0 h-full w-full object-cover">
-          <source src="/videos/equip.mp4" type="video/mp4" />
-        </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))", display: "flex", flexDirection: "column", justifyContent: "center", gap: 16 }}>
           <div style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff" }}>GITHUB</div>
@@ -106,15 +101,6 @@ export default function Github({ onBack }: { onBack?: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden" id="github-screen">
 
-      {/* BG VIDEO */}
-      <video
-        autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-        preload={prefersReducedMotion ? "none" : "metadata"}
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/videos/equip.mp4" type="video/mp4" />
-      </video>
-
       {/* ENTRY MASK */}
       <div
         style={{
@@ -122,7 +108,10 @@ export default function Github({ onBack }: { onBack?: () => void }) {
           inset: 0,
           zIndex: 9,
           overflow: "hidden",
-          background: "#0047FF",
+          background: "#0a1230",
+          backgroundImage: "url('/posters/equip.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           clipPath: "circle(0 at 50% 50%)",
           animation: "github-entry-reveal 1.2s cubic-bezier(0.16,1,0.3,1) forwards",
           pointerEvents: "none",
