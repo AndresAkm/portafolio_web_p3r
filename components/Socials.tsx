@@ -185,7 +185,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
     border: "1px solid rgba(141,246,255,0.24)",
     borderRadius: mobile ? 3 : "0.21vw",
     color: "#f6fbff",
-    fontFamily: "'Montserrat', sans-serif",
+    fontFamily: "var(--font-montserrat), sans-serif",
     fontWeight: 300,
     fontSize: mobile ? "0.88rem" : "0.88vw",
     letterSpacing: mobile ? 0.3 : "0.04vw",
@@ -195,7 +195,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
   };
 
   const label: CSSProperties = {
-    fontFamily: "'Bebas Neue', sans-serif",
+    fontFamily: "var(--font-bebas), sans-serif",
     fontSize: mobile ? "0.82rem" : "0.95vw",
     letterSpacing: mobile ? 1.6 : "0.12vw",
     color: "rgba(205,232,255,0.75)",
@@ -266,7 +266,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
           <span
             style={{
               flex: 1,
-              fontFamily: "'Anton', sans-serif",
+              fontFamily: "var(--font-anton), sans-serif",
               fontSize: mobile ? "1.25rem" : "1.59vw",
               letterSpacing: mobile ? 1.2 : "0.14vw",
               transform: "skewX(-9deg)",
@@ -282,7 +282,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
             onClick={onClose}
             style={{
               flexShrink: 0,
-              fontFamily: "'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-bebas), sans-serif",
               fontSize: mobile ? "0.78rem" : "0.95vw",
               letterSpacing: mobile ? 1.3 : "0.1vw",
               color: "rgba(255,255,255,0.72)",
@@ -323,7 +323,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
               width: "100%",
               minHeight: mobile ? 46 : "2.8vw",
               marginTop: mobile ? 2 : "0.2vw",
-              fontFamily: "'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-bebas), sans-serif",
               fontSize: mobile ? "1rem" : "1.25vw",
               letterSpacing: mobile ? 2 : "0.14vw",
               color: "#fff",
@@ -341,7 +341,7 @@ function ContactForm({ accent, onClose, mobile = false }: { accent: string; onCl
           </button>
 
           {status && (
-            <span aria-live="polite" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: mobile ? "0.76rem" : "0.9vw", letterSpacing: mobile ? 1.3 : "0.1vw", color: status === "MENSAJE ENVIADO ✓" ? "#4dff9b" : "#ff5e88", textShadow: status === "MENSAJE ENVIADO ✓" ? `0 0 ${mobile ? "10px" : "0.69vw"} rgba(77,255,155,0.5)` : "none" }}>
+            <span aria-live="polite" style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: mobile ? "0.76rem" : "0.9vw", letterSpacing: mobile ? 1.3 : "0.1vw", color: status === "MENSAJE ENVIADO ✓" ? "#4dff9b" : "#ff5e88", textShadow: status === "MENSAJE ENVIADO ✓" ? `0 0 ${mobile ? "10px" : "0.69vw"} rgba(77,255,155,0.5)` : "none" }}>
               {status}
             </span>
           )}
@@ -445,8 +445,8 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))" }}>
-          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 4 }}>ENLACES</div>
-          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.75rem,3.3vw,0.9rem)", letterSpacing: 2, color: "rgba(205,232,255,0.65)", marginBottom: 16 }}>PERFIL PROFESIONAL Y CONTACTO</div>
+          <div style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff", marginBottom: 4 }}>ENLACES</div>
+          <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(0.75rem,3.3vw,0.9rem)", letterSpacing: 2, color: "rgba(205,232,255,0.65)", marginBottom: 16 }}>PERFIL PROFESIONAL Y CONTACTO</div>
           {active === EMAIL_INDEX && contactOpen && (
             <ContactForm
               accent={ITEMS[EMAIL_INDEX].accent}
@@ -480,20 +480,20 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                     <Logo id={linkItem.logo} color="#fff" size="24px" />
                   </span>
                   <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
-                    <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.1rem,5vw,1.45rem)", lineHeight: 1, color: active === index ? "#0a0f1c" : "#f6fbff" }}>{linkItem.label}</span>
-                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.78rem,3.4vw,0.9rem)", lineHeight: 1.25, color: active === index ? "rgba(10,15,28,0.68)" : "rgba(205,232,255,0.72)" }}>{linkItem.handle}</span>
+                    <span style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(1.1rem,5vw,1.45rem)", lineHeight: 1, color: active === index ? "#0a0f1c" : "#f6fbff" }}>{linkItem.label}</span>
+                    <span style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: 300, fontSize: "clamp(0.78rem,3.4vw,0.9rem)", lineHeight: 1.25, color: active === index ? "rgba(10,15,28,0.68)" : "rgba(205,232,255,0.72)" }}>{linkItem.handle}</span>
                   </span>
-                  <span style={{ flexShrink: 0, fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.75rem,3.2vw,0.88rem)", letterSpacing: 1, color: active === index ? linkItem.accent : "rgba(141,246,255,0.72)" }}>{linkItem.links[0].label}</span>
+                  <span style={{ flexShrink: 0, fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(0.75rem,3.2vw,0.88rem)", letterSpacing: 1, color: active === index ? linkItem.accent : "rgba(141,246,255,0.72)" }}>{linkItem.links[0].label}</span>
                 </div>
               </button>
             ))}
           </div>
-          <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 13, letterSpacing: 2, color: "rgba(220,240,255,0.7)", background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.22)" }}>
+          <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px", fontFamily: "var(--font-bebas), sans-serif", fontSize: 13, letterSpacing: 2, color: "rgba(220,240,255,0.7)", background: "rgba(6,12,38,0.82)", border: "1px solid rgba(141,246,255,0.22)" }}>
             <span>CURRÍCULUM PDF</span>
             <span style={{ color: "#ff5e88" }}>PRÓXIMAMENTE</span>
           </div>
         </div>
-        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
           <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
           <span>VOLVER AL MENÚ</span>
         </button>
@@ -507,6 +507,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
       {/* BG VIDEO */}
       <video
         autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
+        preload={prefersReducedMotion ? "none" : "metadata"}
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/status.enhanced.mp4" type="video/mp4" />
@@ -525,18 +526,13 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
           pointerEvents: "none",
         }}
       >
-        <video
-          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-        >
-          <source src="/videos/status.enhanced.mp4" type="video/mp4" />
-        </video>
       </div>
 
       <style>{`
         @keyframes socials-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); }
-          to   { clip-path: circle(150vmax at 50% 50%); }
+          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
+          85%  { opacity: 1; }
+          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
         }
         @keyframes sc-arrow-left {
           0%, 100% { transform: translateX(0); opacity: 1; }
@@ -669,6 +665,8 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                 <img
                   src={CHARS[i]}
                   alt=""
+                  decoding="async"
+                  loading="lazy"
                   style={{
                     position: "absolute",
                     top: 0, left: 0,
@@ -700,7 +698,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.14vw" }}>
                     <span
                       style={{
-                        fontFamily: "'Anton', sans-serif",
+                        fontFamily: "var(--font-anton), sans-serif",
                         fontSize: "2.36vw",
                         letterSpacing: "0.14vw",
                         transform: "skewX(-9deg)",
@@ -713,7 +711,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                     </span>
                     <span
                       style={{
-                        fontFamily: "'Bebas Neue', sans-serif",
+                        fontFamily: "var(--font-bebas), sans-serif",
                         fontSize: "1.04vw",
                         letterSpacing: "0.14vw",
                         fontWeight: 700,
@@ -767,7 +765,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
 
             <span
               style={{
-                fontFamily: "'Bebas Neue', sans-serif",
+                fontFamily: "var(--font-bebas), sans-serif",
                 fontSize: "1.45vw",
                 letterSpacing: "0.21vw",
                 color: "#fff",
@@ -786,7 +784,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
             <div key={active} className="sc-right-nav-pop" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.49vw" }}>
               <span
                 style={{
-                  fontFamily: "'Anton', sans-serif",
+                  fontFamily: "var(--font-anton), sans-serif",
                   fontSize: "3.05vw",
                   letterSpacing: "0.28vw",
                   lineHeight: 1,
@@ -814,7 +812,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
 
             <span
               style={{
-                fontFamily: "'Bebas Neue', sans-serif",
+                fontFamily: "var(--font-bebas), sans-serif",
                 fontSize: "1.45vw",
                 letterSpacing: "0.21vw",
                 color: "#fff",
@@ -917,7 +915,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                 style={{
                   flex: 1,
                   marginLeft: "1.11vw",
-                  fontFamily: "'Anton', sans-serif",
+                  fontFamily: "var(--font-anton), sans-serif",
                   fontSize: "1.59vw",
                   letterSpacing: "0.14vw",
                   transform: "skewX(-9deg)",
@@ -937,7 +935,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
                   gap: "0.55vw",
                   paddingRight: "1.8vw",
                   flexShrink: 0,
-                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-bebas), sans-serif",
                   fontSize: "1.45vw",
                   letterSpacing: "0.14vw",
                   color: live ? item.accent : "rgba(255,255,255,0.55)",
@@ -959,7 +957,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
             position: "fixed", bottom: "2.4vh", left: "1.94vw", zIndex: 60,
             display: "flex", alignItems: "center", gap: 10,
             padding: "10px 14px",
-            fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: 2,
+            fontFamily: "var(--font-bebas), sans-serif", fontSize: 16, letterSpacing: 2,
             color: "rgba(220,240,255,0.72)", background: "rgba(6,12,38,0.82)",
             border: "2px solid rgba(141,246,255,0.28)", borderRadius: 4,
             pointerEvents: "none",
@@ -979,7 +977,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
           flexDirection: "column",
           alignItems: "flex-end",
           gap: "0.35vw",
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-bebas), sans-serif",
           zIndex: 50,
           pointerEvents: "none",
           opacity: mounted ? 1 : 0,
@@ -1000,7 +998,7 @@ export default function Socials({ onBack }: { onBack?: () => void }) {
         style={{
           position: "fixed", bottom: "2.4vh", right: "1.94vw", zIndex: 60,
           display: "flex", alignItems: "center", gap: 10,
-          fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 2,
+          fontFamily: "var(--font-bebas), sans-serif", fontSize: 20, letterSpacing: 2,
           color: "#fff", background: "#c4001a", border: "none", cursor: "pointer",
           padding: "10px 18px",
           clipPath: "polygon(12px 0, 100% 0, 100% 100%, 0 100%)",

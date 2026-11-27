@@ -69,33 +69,33 @@ export default function Github({ onBack }: { onBack?: () => void }) {
         </video>
         <div className="absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.6) 0%, rgba(4,9,26,0.86) 100%)" }} />
         <div data-mobile-scroll="" style={{ position: "absolute", inset: 0, zIndex: 10, overflowY: "auto", padding: "20px 16px calc(104px + var(--safe-bottom))", display: "flex", flexDirection: "column", justifyContent: "center", gap: 16 }}>
-          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff" }}>GITHUB</div>
+          <div style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(2.2rem,10vw,3.2rem)", letterSpacing: 2, color: "#f6fbff" }}>GITHUB</div>
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", inset: "8px -4px -8px 8px", background: "#c4001a", clipPath: "polygon(24px 0, 100% 0, calc(100% - 16px) 100%, 0 100%)" }} />
             <div style={{ position: "relative", padding: "18px 16px", background: "#ffffff", clipPath: "polygon(24px 0, 100% 0, calc(100% - 16px) 100%, 0 100%)", boxShadow: "0 8px 24px rgba(0,0,0,0.65)" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                <span style={{ fontFamily: "'Anton', sans-serif", fontSize: "clamp(1.2rem,5.2vw,1.6rem)", letterSpacing: -1, color: "#111", transform: "rotate(-8deg)" }}>LÍDER</span>
-                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#6e40c9" }}>{ITEM.icon}</span>
+                <span style={{ fontFamily: "var(--font-anton), sans-serif", fontSize: "clamp(1.2rem,5.2vw,1.6rem)", letterSpacing: -1, color: "#111", transform: "rotate(-8deg)" }}>LÍDER</span>
+                <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 22, color: "#6e40c9" }}>{ITEM.icon}</span>
               </div>
-              <div style={{ marginTop: 12, fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(1.3rem,5.6vw,1.7rem)", letterSpacing: 3, color: "#111" }}>{ITEM.label}</div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.85rem,3.6vw,1rem)", letterSpacing: 2, color: "rgba(0,0,0,0.55)" }}>{ITEM.handle}</div>
-              <div style={{ marginTop: 8, fontFamily: "'Montserrat', sans-serif", fontWeight: 300, fontSize: "clamp(0.75rem,3.3vw,0.88rem)", lineHeight: 1.35, color: "rgba(0,0,0,0.62)" }}>{ITEM.subtitle}</div>
+              <div style={{ marginTop: 12, fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(1.3rem,5.6vw,1.7rem)", letterSpacing: 3, color: "#111" }}>{ITEM.label}</div>
+              <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(0.85rem,3.6vw,1rem)", letterSpacing: 2, color: "rgba(0,0,0,0.55)" }}>{ITEM.handle}</div>
+              <div style={{ marginTop: 8, fontFamily: "var(--font-montserrat), sans-serif", fontWeight: 300, fontSize: "clamp(0.75rem,3.3vw,0.88rem)", lineHeight: 1.35, color: "rgba(0,0,0,0.62)" }}>{ITEM.subtitle}</div>
               <div style={{ display: "flex", gap: 18, marginTop: 14 }}>
                 {ITEM.stats.map(stat => (
                   <div key={stat.tag} style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 11, letterSpacing: 1, padding: "1px 4px", border: `1px solid ${stat.color}`, color: stat.color }}>{stat.tag}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, fontStyle: "italic", color: "#111" }}>{stat.value}</span>
+                    <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 11, letterSpacing: 1, padding: "1px 4px", border: `1px solid ${stat.color}`, color: stat.color }}>{stat.tag}</span>
+                    <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 22, fontStyle: "italic", color: "#111" }}>{stat.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <button onClick={() => window.open(ITEM.links[0].url, "_blank", "noopener,noreferrer")} style={{ minHeight: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 14px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: 2, color: "#08153f", background: "#8df6ff", border: "none", cursor: "pointer", clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
+          <button onClick={() => window.open(ITEM.links[0].url, "_blank", "noopener,noreferrer")} style={{ minHeight: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 14px", fontFamily: "var(--font-bebas), sans-serif", fontSize: 17, letterSpacing: 2, color: "#08153f", background: "#8df6ff", border: "none", cursor: "pointer", clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
             <span>{ITEM.links[0].label}</span>
             <span>ABRIR →</span>
           </button>
         </div>
-        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
           <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
           <span>VOLVER AL MENÚ</span>
         </button>
@@ -109,6 +109,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
       {/* BG VIDEO */}
       <video
         autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
+        preload={prefersReducedMotion ? "none" : "metadata"}
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/equip.mp4" type="video/mp4" />
@@ -127,18 +128,13 @@ export default function Github({ onBack }: { onBack?: () => void }) {
           pointerEvents: "none",
         }}
       >
-        <video
-          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-        >
-          <source src="/videos/equip.mp4" type="video/mp4" />
-        </video>
       </div>
 
       <style>{`
         @keyframes github-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); }
-          to   { clip-path: circle(150vmax at 50% 50%); }
+          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
+          85%  { opacity: 1; }
+          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
         }
         @keyframes sc-arrow-left {
           0%, 100% { transform: translateX(0); opacity: 1; }
@@ -246,6 +242,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
             <img
               src={CHAR}
               alt=""
+              decoding="async"
               style={{
                 position: "absolute",
                 top: 0, left: 110,
@@ -273,7 +270,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
               {/* ROLE */}
               <div
                 style={{
-                  fontFamily: "'Anton', sans-serif",
+                  fontFamily: "var(--font-anton), sans-serif",
                   fontSize: 50,
                   letterSpacing: -2,
                   color: "#fff",
@@ -293,7 +290,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
                   <span style={{ fontSize: 22, userSelect: "none" }}>{ITEM.icon}</span>
                   <span
                     style={{
-                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontFamily: "var(--font-bebas), sans-serif",
                       fontSize: 28,
                       letterSpacing: 4,
                       color: "#111",
@@ -305,7 +302,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
                 </div>
                 <div
                   style={{
-                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontFamily: "var(--font-bebas), sans-serif",
                     fontSize: 14,
                     letterSpacing: 2,
                     color: "rgba(0,0,0,0.45)",
@@ -317,7 +314,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
                 <div
                   style={{
                     maxWidth: 300,
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "var(--font-montserrat), sans-serif",
                     fontWeight: 300,
                     fontSize: 10,
                     lineHeight: 1.2,
@@ -335,8 +332,8 @@ export default function Github({ onBack }: { onBack?: () => void }) {
                 {ITEM.stats.map(s => (
                   <div key={s.tag} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 9, letterSpacing: 1.5, padding: "1px 4px", border: `1px solid ${s.color}`, color: s.color, lineHeight: 1.4, userSelect: "none" }}>{s.tag}</span>
-                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, fontStyle: "italic", color: "#111", letterSpacing: 1, userSelect: "none" }}>{s.value}</span>
+                      <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 9, letterSpacing: 1.5, padding: "1px 4px", border: `1px solid ${s.color}`, color: s.color, lineHeight: 1.4, userSelect: "none" }}>{s.tag}</span>
+                      <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 26, fontStyle: "italic", color: "#111", letterSpacing: 1, userSelect: "none" }}>{s.value}</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 1, marginTop: 2, width: "100%" }}>
                       <div style={{ height: 3, background: s.color, width: "100%" }} />
@@ -365,11 +362,11 @@ export default function Github({ onBack }: { onBack?: () => void }) {
             zIndex: 50,
           }}
         >
-          <span className="gh-arrow-left" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#c4001a" }}>◄</span>
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 100, letterSpacing: 3, lineHeight: 1, color: "#fff", WebkitTextStroke: "2px #000", userSelect: "none" }}>LB</span>
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: 3, color: "#111", padding: "0 8px", userSelect: "none" }}>GITHUB</span>
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 100, letterSpacing: 3, lineHeight: 1, color: "#fff", WebkitTextStroke: "2px #000", userSelect: "none" }}>RB</span>
-          <span className="gh-arrow-right" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#c4001a" }}>►</span>
+          <span className="gh-arrow-left" style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 22, color: "#c4001a" }}>◄</span>
+          <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 100, letterSpacing: 3, lineHeight: 1, color: "#fff", WebkitTextStroke: "2px #000", userSelect: "none" }}>LB</span>
+          <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 28, letterSpacing: 3, color: "#111", padding: "0 8px", userSelect: "none" }}>GITHUB</span>
+          <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 100, letterSpacing: 3, lineHeight: 1, color: "#fff", WebkitTextStroke: "2px #000", userSelect: "none" }}>RB</span>
+          <span className="gh-arrow-right" style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 22, color: "#c4001a" }}>►</span>
         </div>
       )}
 
@@ -414,14 +411,16 @@ export default function Github({ onBack }: { onBack?: () => void }) {
             <img
               src={ITEM.barIcon}
               alt=""
+              decoding="async"
+              loading="lazy"
               style={{ height: "55%", width: "auto", flexShrink: 0, marginLeft: 14, objectFit: "contain" }}
             />
 
-            <span style={{ flex: 1, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: 2, color: "#111", padding: "0 14px", userSelect: "none" }}>
+            <span style={{ flex: 1, fontFamily: "var(--font-bebas), sans-serif", fontSize: 22, letterSpacing: 2, color: "#111", padding: "0 14px", userSelect: "none" }}>
               {ITEM.links[0].label}
             </span>
 
-            <span style={{ height: "70%", background: "#000", display: "flex", alignItems: "center", padding: "0 12px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 1, color: "#fff", flexShrink: 0, borderRadius: 6, marginRight: 4, userSelect: "none" }}>
+            <span style={{ height: "70%", background: "#000", display: "flex", alignItems: "center", padding: "0 12px", fontFamily: "var(--font-bebas), sans-serif", fontSize: 20, letterSpacing: 1, color: "#fff", flexShrink: 0, borderRadius: 6, marginRight: 4, userSelect: "none" }}>
               ABRIR
             </span>
           </div>
@@ -437,7 +436,7 @@ export default function Github({ onBack }: { onBack?: () => void }) {
           flexDirection: "column",
           alignItems: "flex-end",
           gap: 5,
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-bebas), sans-serif",
           zIndex: 50,
           pointerEvents: "none",
           opacity: mounted ? 1 : 0,

@@ -49,6 +49,32 @@ const VARIANT_MAP: Record<string, Variant> = {
   sideproj: "default",
 };
 
+const SCREEN_MEDIA: Record<string, string[]> = {
+  about:    ["/images/about-makoto.png", "/images/p5-logo.png"],
+  resume:   ["/videos/skills.mp4"],
+  github:   ["/videos/equip.mp4", "/images/char1.png"],
+  socials:  ["/videos/status.enhanced.mp4"],
+  sideproj: ["/videos/skills.mp4"],
+};
+
+const prefetchedMedia = new Set<string>();
+
+function prefetchScreen(screen: string, priority: "low" | "high" = "high") {
+  const urls = SCREEN_MEDIA[screen];
+  if (!urls || typeof document === "undefined") return;
+  for (const url of urls) {
+    if (prefetchedMedia.has(url)) continue;
+    prefetchedMedia.add(url);
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = url.endsWith(".mp4") ? "video" : "image";
+    link.href = url;
+    if (url.endsWith(".mp4")) link.type = "video/mp4";
+    if (priority === "low") link.setAttribute("fetchpriority", "low");
+    document.head.appendChild(link);
+  }
+}
+
 const triClip = (w: number, h: number) =>
   `polygon(0px 0px, ${w}px ${h * 0.5}px, 0px ${h}px)`;
 
@@ -63,36 +89,10 @@ export default function Menu() {
   const [menuVidReady, setMenuVidReady]   = useState(false);
   const [loadProgress, setLoadProgress]   = useState(0);
 
-  const [blobSources, setBlobSources] = useState<{ intro: string; loop: string } | null>(null);
-  const [videosSettled, setVideosSettled] = useState(false);
   const loadStartedAt = useRef<number | null>(null);
 
-  const menuSources = blobSources ?? { intro: "/videos/menu-intro.mp4", loop: "/videos/menu.mp4" };
-  const vidsReady = isMobile || videosSettled;
-
-  useEffect(() => {
-    if (isMobile) return;
-    let cancelled = false;
-    let urls: string[] = [];
-    (async () => {
-      try {
-        const [intro, loop] = await Promise.all([
-          fetch("/videos/menu-intro.mp4").then(r => r.blob()),
-          fetch("/videos/menu.mp4").then(r => r.blob()),
-        ]);
-        if (cancelled) return;
-        const introUrl = URL.createObjectURL(intro);
-        const loopUrl  = URL.createObjectURL(loop);
-        urls = [introUrl, loopUrl];
-        setBlobSources({ intro: introUrl, loop: loopUrl });
-      } catch {
-        setBlobSources(null);
-      } finally {
-        if (!cancelled) setVideosSettled(true);
-      }
-    })();
-    return () => { cancelled = true; urls.forEach(url => URL.revokeObjectURL(url)); };
-  }, [isMobile]);
+  const menuSources = { intro: "/videos/menu-intro.mp4", loop: "/videos/menu.mp4" };
+  const vidsReady = true;
 
   const [showMenu, setShowMenu]           = useState(false);
   const [active, setActive]               = useState(0);
@@ -104,18 +104,7 @@ export default function Menu() {
   const variantRef = useRef<Variant>("panel");
   const [transitionVariant, setTransitionVariant] = useState<Variant>("panel");
 
-  const [randomTrack, setRandomTrack] = useState(TRACKS[0]);
-
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const track = TRACKS[Math.floor(Math.random() * TRACKS.length)];
-    setRandomTrack(track);
-    // Must reload the element so it picks up the new src
-    if (audioRef.current) {
-      audioRef.current.load();
-    }
-  }, []);
 
   const activate = (idx: number) => {
     setActive(idx);
@@ -128,6 +117,7 @@ export default function Menu() {
     setStarted(true);
     const audio = audioRef.current;
     if (audio) {
+      audio.src = TRACKS[Math.floor(Math.random() * TRACKS.length)];
       audio.volume = 0.05;
       audio.play().catch(() => {});
     }
@@ -157,29 +147,36 @@ export default function Menu() {
 
     const timer = setInterval(() => {
       const elapsed = Date.now() - (loadStartedAt.current ?? Date.now());
-      const timed = Math.min(100, Math.round((elapsed / 1100) * 100));
-      setLoadProgress(Math.min(timed, vidsReady ? 100 : 90));
+      const progress = Math.min(100, Math.round((elapsed / 500) * 100));
+      setLoadProgress(progress);
+      if (progress >= 100) {
+        clearInterval(timer);
+        handleStart();
+      }
     }, 50);
 
     return () => clearInterval(timer);
-  }, [started, vidsReady]);
-
-  useEffect(() => {
-    if (started || !vidsReady || loadProgress < 100) return;
-    const timer = setTimeout(handleStart, 200);
-    return () => clearTimeout(timer);
-  }, [started, vidsReady, loadProgress, handleStart]);
+  }, [started, handleStart]);
 
   /* ---------------- MENU DELAY ---------------- */
 
   useEffect(() => {
     if (!started) return;
     if (currentScreen === "menu") {
-      setShowMenu(false);
-      const timer = setTimeout(() => setShowMenu(true), 2000);
+      const timer = setTimeout(() => setShowMenu(true), 1200);
       return () => clearTimeout(timer);
     }
   }, [currentScreen, started]);
+
+  useEffect(() => {
+    if (!showMenu || currentScreen !== "menu" || isMobile) return;
+    const timer = setTimeout(() => {
+      prefetchScreen("about", "low");
+      prefetchScreen("resume", "low");
+      prefetchScreen("github", "low");
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [showMenu, currentScreen, isMobile]);
 
   /* ---------------- SFX ---------------- */
 
@@ -200,6 +197,7 @@ export default function Menu() {
   const transitionTo = (screen: string, skipSelectSfx = false) => {
     if (isTransitioning) return;
 
+    prefetchScreen(screen);
     if (!skipSelectSfx) playSelectSfx();
 
     // Set the variant on the ref AND state synchronously before mounting
@@ -252,12 +250,16 @@ export default function Menu() {
 
       if (currentScreen === "menu") {
         if (e.key === "ArrowDown") {
+          const next = Math.min(menuItems.length - 1, active + 1);
           playNavigationSfx();
-          activate(Math.min(menuItems.length - 1, active + 1));
+          prefetchScreen(menuItems[next].screen);
+          activate(next);
         }
         if (e.key === "ArrowUp") {
+          const next = Math.max(0, active - 1);
           playNavigationSfx();
-          activate(Math.max(0, active - 1));
+          prefetchScreen(menuItems[next].screen);
+          activate(next);
         }
         if (e.key === "Enter") {
           transitionTo(menuItems[active].screen);
@@ -274,8 +276,8 @@ export default function Menu() {
     <MotionConfig reducedMotion="user">
     <main className="relative w-screen h-screen overflow-hidden" style={isMobile ? { height: "100dvh" } : undefined}>
 
-      <audio ref={audioRef} loop preload="auto">
-        <source src={randomTrack} type="audio/mpeg" />
+      <audio ref={audioRef} loop preload="none">
+        <source src={TRACKS[0]} type="audio/mpeg" />
       </audio>
 
       {/* ── CARGANDO ── */}
@@ -291,7 +293,7 @@ export default function Menu() {
             <motion.div
               animate={prefersReducedMotion ? undefined : { opacity: [0.5, 1, 0.5] }}
               transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              style={{ fontFamily: "Persona", fontSize: "clamp(1.5rem, 4vw, 2.5rem)", color: "#67e8f9", letterSpacing: "0.18em", transform: "skewX(-9deg)" }}
+              style={{ fontFamily: "var(--font-persona)", fontSize: "clamp(1.5rem, 4vw, 2.5rem)", color: "#67e8f9", letterSpacing: "0.18em", transform: "skewX(-9deg)" }}
             >
               CARGANDO
             </motion.div>
@@ -305,9 +307,9 @@ export default function Menu() {
                 boxShadow: "0 0 18px rgba(103,232,249,0.25)",
               }}>
                 <motion.div
-                  animate={{ width: `${loadProgress}%` }}
+                  animate={{ scaleX: loadProgress / 100 }}
                   transition={{ duration: 0.12, ease: "linear" }}
-                  style={{ height: "100%", background: "linear-gradient(90deg, #1f6fb2, #67e8f9)" }}
+                  style={{ width: "100%", height: "100%", transformOrigin: "left", background: "linear-gradient(90deg, #1f6fb2, #67e8f9)" }}
                 />
               </div>
               <div style={{ position: "absolute", left: -10, top: -7, width: 6, height: 26, background: "#e8002d", transform: "skewX(-12deg)" }} />
@@ -317,7 +319,7 @@ export default function Menu() {
               width: "min(460px, 74vw)",
               display: "flex",
               justifyContent: "space-between",
-              fontFamily: "'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-bebas), sans-serif",
               fontSize: 12,
               letterSpacing: "0.18em",
               color: "rgba(255,255,255,0.35)",
@@ -341,7 +343,7 @@ export default function Menu() {
           {currentScreen === "menu" && vidsReady && (
             <video
               autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : isMobile ? "metadata" : "auto"}
+              preload={prefersReducedMotion ? "none" : "metadata"}
               src={menuSources.loop}
               data-mobile-bg={isMobile ? "" : undefined}
               className="absolute inset-0 w-full h-full object-cover"
@@ -353,7 +355,7 @@ export default function Menu() {
           {currentScreen === "menu" && vidsReady && (
             <video
               autoPlay={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : isMobile ? "metadata" : "auto"}
+              preload={prefersReducedMotion ? "none" : "metadata"}
               src={menuSources.intro}
               data-mobile-bg={isMobile ? "" : undefined}
               onCanPlayThrough={() => setMenuVidReady(true)}
@@ -390,7 +392,7 @@ export default function Menu() {
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
                     style={{
-                      fontFamily: "'Anton', sans-serif",
+                      fontFamily: "var(--font-anton), sans-serif",
                       fontWeight: 400,
                       fontSize: heroTitleFontSize,
                       letterSpacing: "-0.02em",
@@ -409,7 +411,7 @@ export default function Menu() {
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.38 }}
                     style={{
-                      fontFamily: "'Anton', sans-serif",
+                      fontFamily: "var(--font-anton), sans-serif",
                       fontWeight: 400,
                       fontSize: heroTitleFontSize,
                       letterSpacing: "-0.02em",
@@ -453,20 +455,20 @@ export default function Menu() {
                   pointerEvents: "none",
                 }}
               >
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isMobile ? "7vw" : "2.6vw", lineHeight: 0.95, color: "#0a0f1c", letterSpacing: "0.02em" }}>
+                <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: isMobile ? "7vw" : "2.6vw", lineHeight: 0.95, color: "#0a0f1c", letterSpacing: "0.02em" }}>
                   DISPONIBLE
                 </div>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isMobile ? "2.6vw" : "0.85vw", letterSpacing: "0.22em", color: "#2a3340", marginTop: 1 }}>
+                <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: isMobile ? "2.6vw" : "0.85vw", letterSpacing: "0.22em", color: "#2a3340", marginTop: 1 }}>
                   ENFOQUE ACTUAL
                 </div>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isMobile ? "3vw" : "1.1vw", letterSpacing: "0.12em", color: "#1f6fb2", lineHeight: 1.1, marginTop: 2 }}>
+                <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: isMobile ? "3vw" : "1.1vw", letterSpacing: "0.12em", color: "#1f6fb2", lineHeight: 1.1, marginTop: 2 }}>
                   FULL-STACK DEV
                 </div>
                 <div style={{ height: 2, background: "#0a0f1c", margin: isMobile ? "1.6vw 0 1.4vw" : "0.6vw 0 0.5vw" }} />
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isMobile ? "2.6vw" : "0.85vw", letterSpacing: "0.22em", color: "#2a3340" }}>
+                <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: isMobile ? "2.6vw" : "0.85vw", letterSpacing: "0.22em", color: "#2a3340" }}>
                   ESTADO
                 </div>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: isMobile ? "3.6vw" : "1.08vw", letterSpacing: "0.06em", color: "#1f6fb2", lineHeight: 1.05, whiteSpace: "normal" }}>
+                <div style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: isMobile ? "3.6vw" : "1.08vw", letterSpacing: "0.06em", color: "#1f6fb2", lineHeight: 1.05, whiteSpace: "normal" }}>
                   PRACTICANTE EN TECNOPARQUE
                 </div>
                 {/* corner wedge */}
@@ -514,7 +516,7 @@ export default function Menu() {
                     const tone = NAV_TONES[i];
                     const fontSize = isMobile ? "clamp(1.36rem, 6.24vw, 2.24rem)" : "clamp(2.56rem, 4.64vw, 4.32rem)";
                     const textStyle: CSSProperties = {
-                      fontFamily: "'Anton', sans-serif",
+                      fontFamily: "var(--font-anton), sans-serif",
                       fontWeight: 900,
                       fontStyle: "italic",
                       fontSize,
@@ -536,7 +538,8 @@ export default function Menu() {
                       <div
                         key={item.label}
                         onClick={() => { activate(i); transitionTo(item.screen); }}
-                        onMouseEnter={() => { activate(i); playNavigationSfx(); }}
+                        onMouseEnter={() => { activate(i); playNavigationSfx(); prefetchScreen(item.screen); }}
+                        onTouchStart={() => prefetchScreen(item.screen)}
                         style={{
                           position: "relative",
                           marginBottom: i === 0 ? "14px" : 0,
@@ -616,7 +619,7 @@ export default function Menu() {
                   flexDirection: "column",
                   alignItems: "flex-end",
                   gap: 7,
-                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-bebas), sans-serif",
                   pointerEvents: "none",
                 }}
               >
@@ -638,7 +641,7 @@ export default function Menu() {
                   flexDirection: "column",
                   gap: 3,
                   maxWidth: isMobile ? "74vw" : "min(46vw, 620px)",
-                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-bebas), sans-serif",
                   fontSize: isMobile ? 9 : 11,
                   letterSpacing: "0.12em",
                   lineHeight: 1.35,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import { useIsMobile } from "./useIsMobile";
@@ -40,6 +40,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
   const [mounted, setMounted] = useState(false);
   const [page, setPage]       = useState(0);
   const [shown, setShown]     = useState(0);   // chars revealed of current page
+  const tickRef = useRef<HTMLAudioElement | null>(null);
 
   const full = PAGES[page];
   const done = shown >= full.length;
@@ -60,14 +61,18 @@ export default function About({ onBack }: { onBack?: () => void }) {
         return;
       }
       setShown(0);
+      if (!tickRef.current) {
+        tickRef.current = new Audio("/sfx/deck_ui_navigation.wav");
+        tickRef.current.preload = "auto";
+      }
       let i = 0;
       interval = window.setInterval(() => {
         i += 1;
         setShown(i);
-        if (i % 3 === 0 && full[i - 1] !== " " && full[i - 1] !== "\n") {
-          const tick = new Audio("/sfx/deck_ui_navigation.wav");
-          tick.volume = 0.06;
-          tick.play().catch(() => {});
+        if (i % 3 === 0 && full[i - 1] !== " " && full[i - 1] !== "\n" && tickRef.current) {
+          tickRef.current.currentTime = 0;
+          tickRef.current.volume = 0.06;
+          tickRef.current.play().catch(() => {});
         }
         if (i >= full.length && interval !== undefined) window.clearInterval(interval);
       }, TYPE_SPEED);
@@ -104,7 +109,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
         <div className="absolute inset-0 select-none" style={{ zIndex: 0, pointerEvents: "none", backgroundImage: "url('/images/about-makoto.png')", backgroundSize: "cover", backgroundPosition: "32% center" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(4,9,26,0.15) 0%, rgba(4,9,26,0.55) 55%, rgba(4,9,26,0.9) 100%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 12, padding: "18px 16px calc(88px + var(--safe-bottom))" }}>
-          <div style={{ alignSelf: "flex-end", marginRight: 4, padding: "5px 12px 6px", background: "#0a1230", color: "#8df6ff", fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(18px,5.5vw,24px)", letterSpacing: 3, clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
+          <div style={{ alignSelf: "flex-end", marginRight: 4, padding: "5px 12px 6px", background: "#0a1230", color: "#8df6ff", fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(18px,5.5vw,24px)", letterSpacing: 3, clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}>
             {SPEAKER}
           </div>
           <div
@@ -112,21 +117,21 @@ export default function About({ onBack }: { onBack?: () => void }) {
             onClick={advance}
             style={{ position: "relative", maxHeight: "46vh", overflowY: "auto", padding: "18px 18px 22px", background: "rgba(245,249,255,0.96)", border: "2px solid rgba(8,17,54,0.8)", clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 12px, 100% 100%, 18px 100%, 0 calc(100% - 12px))", boxShadow: "6px 6px 0 rgba(6,15,44,0.72)", cursor: "pointer" }}
           >
-            <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 400, fontSize: "clamp(0.88rem,4vw,1rem)", lineHeight: 1.45, color: "#0b1730" }}>
+            <span style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: 400, fontSize: "clamp(0.88rem,4vw,1rem)", lineHeight: 1.45, color: "#0b1730" }}>
               {full.slice(0, shown)}
             </span>
-            <span style={{ marginLeft: 2, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: "#2f8bff" }}>_</span>
+            <span style={{ marginLeft: 2, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, color: "#2f8bff" }}>_</span>
           </div>
           <button
             onClick={advance}
-            style={{ alignSelf: "stretch", minHeight: 48, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "#c4001a", border: "none", cursor: "pointer", clipPath: "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}
+            style={{ alignSelf: "stretch", minHeight: 48, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "#c4001a", border: "none", cursor: "pointer", clipPath: "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}
           >
             {!done ? "VER TODO" : isLast ? "REINICIAR" : "CONTINUAR"}
           </button>
         </div>
         <button
           onClick={() => onBack?.()}
-          style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}
+          style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}
         >
           <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
           <span>VOLVER AL MENÚ</span>
@@ -142,6 +147,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
       <motion.img
         src="/images/about-makoto.png"
         alt=""
+        decoding="async"
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -232,7 +238,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
             top: -30,
             background: "linear-gradient(180deg, #2f8bff 0%, #1f6fe0 100%)",
             color: "#fff",
-            fontFamily: "'Anton', sans-serif",
+            fontFamily: "var(--font-anton), sans-serif",
             fontSize: 26,
             letterSpacing: 3,
             padding: "4px 20px 6px 26px",
@@ -316,7 +322,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
           position: "absolute",
           bottom: 76, right: 28,
           zIndex: 25,
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-bebas), sans-serif",
           fontSize: 14,
           letterSpacing: 2,
           color: "rgba(255,255,255,0.4)",
@@ -330,6 +336,8 @@ export default function About({ onBack }: { onBack?: () => void }) {
       <motion.img
         src="/images/p5-logo.png"
         alt="Ladrones Fantasma"
+        decoding="async"
+        loading="lazy"
         initial={{ opacity: 0, scale: 0.6, rotate: -12 }}
         animate={{ opacity: mounted ? 0.92 : 0, scale: 1, rotate: 0 }}
         transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1], delay: 0.7 }}
@@ -353,7 +361,7 @@ export default function About({ onBack }: { onBack?: () => void }) {
         style={{
           position: "absolute", bottom: 20, right: 28, zIndex: 40,
           display: "flex", alignItems: "center", gap: 10,
-          fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 2,
+          fontFamily: "var(--font-bebas), sans-serif", fontSize: 20, letterSpacing: 2,
           color: "#fff", background: "#c4001a", border: "none", cursor: "pointer",
           padding: "10px 18px",
           clipPath: "polygon(12px 0, 100% 0, 100% 100%, 0 100%)",

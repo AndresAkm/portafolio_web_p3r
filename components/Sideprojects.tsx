@@ -26,12 +26,12 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
         <div style={{ position: "absolute", top: "38%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
         <div style={{ position: "absolute", top: "62%", left: 0, right: 0, height: 4, zIndex: 2, background: "#c4001a" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: "0 16px", textAlign: "center" }}>
-          <div style={{ fontFamily: "Persona", fontSize: "clamp(2rem,10vw,3.2rem)", letterSpacing: "0.02em", lineHeight: 1, color: "#67e8f9", WebkitTextStroke: "1px rgba(103,232,249,0.4)" }}>PRÓXIMAMENTE</div>
-          <div style={{ maxWidth: "90vw", fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(0.8rem,4vw,1rem)", letterSpacing: "clamp(1px,0.4vw,3px)", lineHeight: 1.5, color: "rgba(255,255,255,0.45)" }}>
+          <div style={{ fontFamily: "var(--font-persona)", fontSize: "clamp(2rem,10vw,3.2rem)", letterSpacing: "0.02em", lineHeight: 1, color: "#67e8f9", WebkitTextStroke: "1px rgba(103,232,249,0.4)" }}>PRÓXIMAMENTE</div>
+          <div style={{ maxWidth: "90vw", fontFamily: "var(--font-bebas), sans-serif", fontSize: "clamp(0.8rem,4vw,1rem)", letterSpacing: "clamp(1px,0.4vw,3px)", lineHeight: 1.5, color: "rgba(255,255,255,0.45)" }}>
             PROYECTOS SECUNDARIOS EN CARGA<span>_</span>
           </div>
         </div>
-        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
+        <button onClick={() => onBack?.()} style={{ position: "absolute", left: 16, right: 16, bottom: "calc(12px + var(--safe-bottom))", zIndex: 40, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "var(--font-bebas), sans-serif", fontSize: 18, letterSpacing: 2, color: "#fff", background: "rgba(6,12,38,0.92)", border: "2px solid rgba(141,246,255,0.35)", borderRadius: 4, cursor: "pointer" }}>
           <span style={{ fontSize: 20, lineHeight: 1 }}>←</span>
           <span>VOLVER AL MENÚ</span>
         </button>
@@ -45,6 +45,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
       {/* BG VIDEO */}
       <video
         autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
+        preload={prefersReducedMotion ? "none" : "metadata"}
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/videos/skills.mp4" type="video/mp4" />
@@ -66,19 +67,14 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
           pointerEvents: "none",
         }}
       >
-        <video
-          autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-        >
-          <source src="/videos/skills.mp4" type="video/mp4" />
-        </video>
         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
       </div>
 
       <style>{`
         @keyframes sp-entry-reveal {
-          from { clip-path: circle(0 at 50% 50%); }
-          to   { clip-path: circle(150vmax at 50% 50%); }
+          from { clip-path: circle(0 at 50% 50%); opacity: 1; }
+          85%  { opacity: 1; }
+          to   { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
         }
         @keyframes sp-blink {
           0%, 100% { opacity: 1; }
@@ -137,7 +133,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
           animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
           transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            fontFamily: "Persona",
+            fontFamily: "var(--font-persona)",
             fontSize: "clamp(3rem, 8vw, 7rem)",
             color: "#67e8f9",
             letterSpacing: "0.05em",
@@ -155,7 +151,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
           animate={{ opacity: mounted ? 1 : 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           style={{
-            fontFamily: "'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-bebas), sans-serif",
             fontSize: 22,
             letterSpacing: 6,
             color: "rgba(255,255,255,0.35)",
@@ -180,7 +176,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
           flexDirection: "column",
           alignItems: "flex-end",
           gap: 5,
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-bebas), sans-serif",
           zIndex: 20,
           pointerEvents: "none",
         }}
@@ -197,7 +193,7 @@ export default function SideProjects({ onBack }: { onBack?: () => void }) {
         style={{
           position: "absolute", bottom: 20, right: 28, zIndex: 20,
           display: "flex", alignItems: "center", gap: 10,
-          fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: 2,
+          fontFamily: "var(--font-bebas), sans-serif", fontSize: 20, letterSpacing: 2,
           color: "#fff", background: "#c4001a", border: "none", cursor: "pointer",
           padding: "10px 18px",
           clipPath: "polygon(12px 0, 100% 0, 100% 100%, 0 100%)",
