@@ -106,11 +106,15 @@ const BACKDROP_VIDEOS = [
   { key: "status", src: "/videos/status.enhanced.mp4", poster: "/posters/status.enhanced.webp" },
 ] as const;
 
-function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string | null }) {
+function VideoBackdrop({ warmed, active, ready, onReady }: {
+  warmed: Set<string>;
+  active: string | null;
+  ready: Set<string>;
+  onReady: (key: string) => void;
+}) {
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
   const refs = useRef<Record<string, HTMLVideoElement | null>>({});
-  const [videoReady, setVideoReady] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     if (prefersReducedMotion) return;
@@ -123,16 +127,12 @@ function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string
     }
   }, [warmed, prefersReducedMotion]);
 
-  const markReady = (key: string) => {
-    setVideoReady(prev => (prev.has(key) ? prev : new Set(prev).add(key)));
-  };
-
   return (
     <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none", background: "#050b1f" }}>
       {BACKDROP_VIDEOS.map((item) => {
         const isActive = active === item.key;
         const shouldPlay = warmed.has(item.key) && !prefersReducedMotion;
-        const isReady = videoReady.has(item.key);
+        const isReady = ready.has(item.key);
         return (
           <div
             key={item.key}
@@ -158,7 +158,7 @@ function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string
               muted
               playsInline
               preload={warmed.has(item.key) ? "auto" : "metadata"}
-              onPlaying={() => markReady(item.key)}
+              onPlaying={() => onReady(item.key)}
               aria-hidden="true"
               data-mobile-bg={isMobile ? "" : undefined}
               className="absolute inset-0 w-full h-full object-cover"
@@ -206,6 +206,11 @@ export default function Menu() {
   const [warmedVideos, setWarmedVideos] = useState<Set<string>>(() => new Set());
   const warmedVideosRef = useRef<Set<string>>(new Set());
 
+  const [videoReady, setVideoReady] = useState<Set<string>>(() => new Set());
+  const videoReadyRef = useRef<Set<string>>(new Set());
+
+  const pendingScreenRef = useRef<string | null>(null);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const activate = (idx: number) => {
@@ -234,6 +239,27 @@ export default function Menu() {
     warmedVideosRef.current.add(key);
     setWarmedVideos(new Set(warmedVideosRef.current));
   }, []);
+
+  const finishSwap = useCallback((screen: string) => {
+    pendingScreenRef.current = null;
+    if (screen === "menu") {
+      setIntroFinished(false);
+      setMenuVidReady(false);
+      setMenuLoopReady(false);
+      setShowMenu(false);
+      setActive(0);
+    }
+    setCurrentScreen(screen);
+  }, []);
+
+  const markVideoReady = useCallback((key: string) => {
+    if (videoReadyRef.current.has(key)) return;
+    videoReadyRef.current = new Set(videoReadyRef.current).add(key);
+    setVideoReady(videoReadyRef.current);
+
+    const pending = pendingScreenRef.current;
+    if (pending && SCREEN_VIDEO[pending] === key) finishSwap(pending);
+  }, [finishSwap]);
 
   const warmScreen = useCallback((screen: string) => {
     warmChunk(screen);
@@ -295,9 +321,11 @@ export default function Menu() {
       warmChunk("github");
       warmChunk("socials");
       warmChunk("transition");
+      warmVideo("skills");
+      warmVideo("equip");
     }, 2500);
     return () => clearTimeout(timer);
-  }, [showMenu, currentScreen, isMobile, warmChunk]);
+  }, [showMenu, currentScreen, isMobile, warmChunk, warmVideo]);
 
   /* ---------------- SFX ---------------- */
 
@@ -331,17 +359,17 @@ export default function Menu() {
       setIsTransitioning(true);
     });
 
-    const swapDelay = screen === "menu" ? 580 : 220;
-    setTimeout(() => {
-      if (screen === "menu") {
-        setIntroFinished(false);
-        setMenuVidReady(false);
-        setMenuLoopReady(false);
-        setShowMenu(false);
-        setActive(0);
-      }
-      setCurrentScreen(screen);
-    }, swapDelay);
+    const videoKey = SCREEN_VIDEO[screen];
+    if (videoKey && !prefersReducedMotion && !videoReadyRef.current.has(videoKey)) {
+      pendingScreenRef.current = screen;
+      window.setTimeout(() => {
+        if (pendingScreenRef.current !== screen) return;
+        finishSwap(screen);
+      }, 560);
+    } else {
+      const swapDelay = screen === "menu" ? 580 : 220;
+      window.setTimeout(() => finishSwap(screen), swapDelay);
+    }
 
     const panelHoldExtra = screen === "menu" ? 1500 : 0;
     const unmountDelay = screen === "menu" ? 1200 + panelHoldExtra : 650;
@@ -455,7 +483,12 @@ export default function Menu() {
 
       {started && (
         <>
-          <VideoBackdrop warmed={warmedVideos} active={SCREEN_VIDEO[currentScreen] ?? null} />
+          <VideoBackdrop
+            warmed={warmedVideos}
+            active={SCREEN_VIDEO[currentScreen] ?? null}
+            ready={videoReady}
+            onReady={markVideoReady}
+          />
 
           {/* WHITE BACKDROP — fills the space opened up on the left */}
           {currentScreen === "menu" && (
