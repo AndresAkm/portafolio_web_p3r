@@ -110,6 +110,7 @@ function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
   const refs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const [videoReady, setVideoReady] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     if (prefersReducedMotion) return;
@@ -122,28 +123,50 @@ function VideoBackdrop({ warmed, active }: { warmed: Set<string>; active: string
     }
   }, [warmed, prefersReducedMotion]);
 
+  const markReady = (key: string) => {
+    setVideoReady(prev => (prev.has(key) ? prev : new Set(prev).add(key)));
+  };
+
   return (
     <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none", background: "#050b1f" }}>
       {BACKDROP_VIDEOS.map((item) => {
         const isActive = active === item.key;
         const shouldPlay = warmed.has(item.key) && !prefersReducedMotion;
+        const isReady = videoReady.has(item.key);
         return (
-          <video
+          <div
             key={item.key}
-            ref={(el) => { refs.current[item.key] = el; }}
-            autoPlay={shouldPlay}
-            loop={!prefersReducedMotion}
-            muted
-            playsInline
-            preload={warmed.has(item.key) ? "auto" : "metadata"}
-            poster={item.poster}
-            aria-hidden="true"
-            data-mobile-bg={isMobile ? "" : undefined}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ zIndex: 0, opacity: isActive ? 1 : 0, transition: "opacity 180ms ease" }}
+            className="absolute inset-0"
+            style={{ zIndex: 0, opacity: isActive ? 1 : 0, transition: "opacity 180ms ease", pointerEvents: "none" }}
           >
-            <source src={item.src} type="video/mp4" />
-          </video>
+            <div
+              className="absolute inset-0"
+              style={{
+                zIndex: 0,
+                backgroundImage: `url(${item.poster})`,
+                backgroundSize: "cover",
+                backgroundPosition: isMobile ? "center 35%" : "center",
+                transform: isReady ? "scale(1)" : "scale(1.015)",
+                filter: isReady ? "blur(0px)" : "blur(4px)",
+                transition: "transform 600ms ease, filter 600ms ease",
+              }}
+            />
+            <video
+              ref={(el) => { refs.current[item.key] = el; }}
+              autoPlay={shouldPlay}
+              loop={!prefersReducedMotion}
+              muted
+              playsInline
+              preload={warmed.has(item.key) ? "auto" : "metadata"}
+              onPlaying={() => markReady(item.key)}
+              aria-hidden="true"
+              data-mobile-bg={isMobile ? "" : undefined}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ zIndex: 1, opacity: isReady ? 1 : 0, transition: "opacity 400ms ease" }}
+            >
+              <source src={item.src} type="video/mp4" />
+            </video>
+          </div>
         );
       })}
     </div>
@@ -162,6 +185,7 @@ export default function Menu() {
   const [started, setStarted]             = useState(false);
   const [introFinished, setIntroFinished] = useState(false);
   const [menuVidReady, setMenuVidReady]   = useState(false);
+  const [menuLoopReady, setMenuLoopReady] = useState(false);
   const [loadProgress, setLoadProgress]   = useState(0);
 
   const loadStartedAt = useRef<number | null>(null);
@@ -312,6 +336,7 @@ export default function Menu() {
       if (screen === "menu") {
         setIntroFinished(false);
         setMenuVidReady(false);
+        setMenuLoopReady(false);
         setShowMenu(false);
         setActive(0);
       }
@@ -437,40 +462,78 @@ export default function Menu() {
             <div className="absolute inset-0" style={{ background: "#ffffff", zIndex: 0 }} />
           )}
 
-          {/* LOOP VIDEO — always mounted & playing underneath, so the intro→loop handoff has no gap/flash */}
+          {/* LOOP VIDEO — poster layer fades into the live video once it starts playing */}
           {currentScreen === "menu" && vidsReady && (
-            <video
-              autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : "auto"}
-              poster="/posters/menu.webp"
-              src={menuSources.loop}
-              data-mobile-bg={isMobile ? "" : undefined}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ transform: isMobile ? "none" : "translateX(15%)", objectPosition: isMobile ? "22% center" : "center", zIndex: 1 }}
-            />
+            <div
+              className="absolute inset-0"
+              style={{ transform: isMobile ? "none" : "translateX(15%)", zIndex: 1, pointerEvents: "none" }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: "url('/posters/menu.webp')",
+                  backgroundSize: "cover",
+                  backgroundPosition: isMobile ? "22% center" : "center",
+                  transform: menuLoopReady ? "scale(1)" : "scale(1.015)",
+                  filter: menuLoopReady ? "blur(0px)" : "blur(4px)",
+                  transition: "transform 600ms ease, filter 600ms ease",
+                }}
+              />
+              <video
+                autoPlay={!prefersReducedMotion} loop={!prefersReducedMotion} muted playsInline
+                preload={prefersReducedMotion ? "none" : "auto"}
+                src={menuSources.loop}
+                data-mobile-bg={isMobile ? "" : undefined}
+                onPlaying={() => setMenuLoopReady(true)}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  objectPosition: isMobile ? "22% center" : "center",
+                  opacity: menuLoopReady ? 1 : 0,
+                  transition: "opacity 400ms ease",
+                }}
+              />
+            </div>
           )}
 
-          {/* INTRO VIDEO — on top; hidden until it can play, then fades OUT when it ends (loop already running behind) */}
+          {/* INTRO VIDEO — poster fades into live video, then the whole layer fades out when it ends */}
           {currentScreen === "menu" && vidsReady && (
-            <video
-              autoPlay={!prefersReducedMotion} muted playsInline
-              preload={prefersReducedMotion ? "none" : "auto"}
-              poster="/posters/menu-intro.webp"
-              src={menuSources.intro}
-              data-mobile-bg={isMobile ? "" : undefined}
-              onCanPlayThrough={() => setMenuVidReady(true)}
-              onPlaying={() => setMenuVidReady(true)}
-              onEnded={() => setIntroFinished(true)}
-              className="absolute inset-0 w-full h-full object-cover"
+            <div
+              className="absolute inset-0"
               style={{
                 transform: isMobile ? "none" : "translateX(15%)",
-                objectPosition: isMobile ? "22% center" : "center",
                 zIndex: 2,
-                opacity: introFinished ? 0 : (menuVidReady ? 1 : 0),
+                opacity: introFinished ? 0 : 1,
                 transition: "opacity 0.4s ease",
                 pointerEvents: "none",
               }}
-            />
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: "url('/posters/menu-intro.webp')",
+                  backgroundSize: "cover",
+                  backgroundPosition: isMobile ? "22% center" : "center",
+                  transform: menuVidReady ? "scale(1)" : "scale(1.015)",
+                  filter: menuVidReady ? "blur(0px)" : "blur(4px)",
+                  transition: "transform 600ms ease, filter 600ms ease",
+                }}
+              />
+              <video
+                autoPlay={!prefersReducedMotion} muted playsInline
+                preload={prefersReducedMotion ? "none" : "auto"}
+                src={menuSources.intro}
+                data-mobile-bg={isMobile ? "" : undefined}
+                onCanPlayThrough={() => setMenuVidReady(true)}
+                onPlaying={() => setMenuVidReady(true)}
+                onEnded={() => setIntroFinished(true)}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  objectPosition: isMobile ? "22% center" : "center",
+                  opacity: menuVidReady ? 1 : 0,
+                  transition: "opacity 400ms ease",
+                }}
+              />
+            </div>
           )}
 
           {/* ── MENU ── */}
